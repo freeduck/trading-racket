@@ -2,6 +2,7 @@
 (require http/request)
 (require net/http-client json)
 (require net/uri-codec)
+(provide asset-info balance)
 (define (list-assets)
   (define-values (in out) (connect "http" "www.google.com" 80))
   (println in)
