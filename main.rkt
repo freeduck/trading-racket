@@ -33,7 +33,11 @@
   )
 
 (module+ main
+  (define (create-config yaml-config-path)
+    (define config-yaml (file->yaml (path->string (expand-user-path yaml-config-path))))
+    (lambda (key)
+      (hash-ref config-yaml key)))
+  (define get-config (create-config "~/kraken.yaml"))
   ;; Main entry point, executed when run with the `racket` executable or DrRacket.
-  (bytes->string/latin-1 (base64-decode (string->bytes/latin-1 (hash-ref (file->yaml (path->string (expand-user-path "~/kraken.yaml"))) "privatekey"))))
-  (println "Hello, World!")
-  )
+  (bytes->string/latin-1 (base64-decode (string->bytes/latin-1 (get-config "privatekey"))))
+  (println "Hello, World!"))
