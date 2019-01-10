@@ -2,7 +2,8 @@
 (define collection "crypto-trading")
 (define deps '("base"
                "rackunit-lib"
-               "http"))
+               "http"
+               "yaml"))
 (define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/crypto-trading.scrbl" ())))
 (define pkg-desc "Description Here")
