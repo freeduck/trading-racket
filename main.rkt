@@ -26,11 +26,14 @@
 
 ;; Code here
 (require "kraken.rkt")
+(require net/base64)
+(require yaml)
 (module+ test
   ;; Tests to be run with raco test
   )
 
 (module+ main
   ;; Main entry point, executed when run with the `racket` executable or DrRacket.
+  (bytes->string/latin-1 (base64-decode (string->bytes/latin-1 (hash-ref (file->yaml (path->string (expand-user-path "~/kraken.yaml"))) "privatekey"))))
   (println "Hello, World!")
   )
