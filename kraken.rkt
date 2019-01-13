@@ -15,6 +15,12 @@
   (define data (read-json response))
   (println data))
 
+(define (parirs)
+  (define-values (status header response)
+    (http-sendrecv "api.kraken.com" "/0/public/AssetPairs" #:ssl? 'tls))
+  (define data (read-json response))
+  (println data))
+
 (define (balance apikey)
   (let* ([nonse (number->string
                  (current-milliseconds))]
