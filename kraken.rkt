@@ -2,7 +2,7 @@
 (require http/request)
 (require net/http-client json)
 (require net/uri-codec)
-(provide asset-info balance)
+(provide asset-info balance sign)
 (define (list-assets)
   (define-values (in out) (connect "http" "www.google.com" 80))
   (println in)
@@ -37,3 +37,7 @@
                      #:data (alist->form-urlencoded post-data)))
     (define data (read-json response))
     (println data)))
+
+(define (sign data path secret)
+  (define postdata (alist->form-urlencoded data))
+  (define ))
