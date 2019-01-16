@@ -60,7 +60,7 @@
   ;; U1ELyaQAlkTY8ABOQ1YZ6TbiWf7oHYNMCL9Z+fQEV/Zb0MR7xAUnwKkczuh8fewShhWV94eWLpQENZZ8qUeCeA==
   (require rackunit)
   (define get-config (create-config "~/kraken.yaml"))
-  (define postdata (list '["nonce" . "1547494295437"]
-                         '["hest" . "hjort"]))
-  (check-equal? "Py9hOynphm+Z2504vLZGd9gEwtjdFTHztONLN83Wv30gQzmjIILO6b+rfFmFxB1XspYD2jTBCv4K4eSoGepfcQ=="
+  (define postdata '([nonce . "1547494295437"]
+                     [hest . "hjort"]))
+  (check-equal? "hest=hjort&nonce=1547494295437"
                 (sign postdata '/0/private/Balance' (get-config "secret"))))
