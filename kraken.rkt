@@ -1,7 +1,7 @@
 #lang racket
 (require http/request)
 (require net/http-client json)
-(require net/uri-codec)
+(require net/uri-codec net/base64 sha)
 (provide asset-info balance sign)
 (define (list-assets)
   (define-values (in out) (connect "http" "www.google.com" 80))
@@ -40,4 +40,11 @@
 
 (define (sign data path secret)
   (define postdata (alist->form-urlencoded data))
-  postdata)
+  (define bpath (string->bytes/utf-8 path))
+  (define bdata (sha256 (string->bytes/utf-8 (string-append (cdr (assoc 'nonce
+                                                                        data))
+                                                            postdata))))
+  (define prefixed (bytes-append bpath
+                                 bdata))
+  (bytes->string/latin-1 (base64-encode (hmac-sha256 (base64-decode (string->bytes/utf-8 secret))
+                                                     prefixed))))
