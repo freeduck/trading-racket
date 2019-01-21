@@ -21,20 +21,25 @@
   (define data (read-json response))
   (println data))
 
-(define (balance apikey)
+(define (balance apikey secret)
   (let* ([nonse (number->string
                  (current-milliseconds))]
          [version "0"]
          [query-path "private/Balance"]
-         [path (string-append "/" version "/" query-path)])
-    (define post-data (list
-                       (cons 'nonse nonse)))
+         [path (string-append "/" version "/" query-path)]
+         [post-data (list
+                     (cons 'nonse nonse))]
+         [sig (sign post-data path secret)])
     (define-values (status header response)
       (http-sendrecv "api.kraken.com"
                      path
                      #:ssl? 'tls
                      #:method "POST"
-                     #:data (alist->form-urlencoded post-data)))
+                     #:data (alist->form-urlencoded post-data)
+                     #:headers (list (string-append "API-key: "
+                                                    apikey)
+                                     (string-append "API-sign: "
+                                                    sig))))
     (define data (read-json response))
     (println data)))
 
@@ -46,5 +51,5 @@
                                                             postdata))))
   (define prefixed (bytes-append bpath
                                  bdata))
-  (bytes->string/latin-1 (base64-encode (hmac-sha256 (base64-decode (string->bytes/utf-8 secret))
+  (bytes->string/utf-8 (base64-encode (hmac-sha256 (base64-decode (string->bytes/utf-8 secret))
                                                      prefixed))))
