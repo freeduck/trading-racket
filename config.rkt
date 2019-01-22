@@ -1,5 +1,6 @@
 #lang racket
 (require yaml)
+(provide create-config)
 (define (create-config yaml-config-path)
   (define config-yaml (file->yaml (path->string (expand-user-path yaml-config-path))))
   (lambda (key)

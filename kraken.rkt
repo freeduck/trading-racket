@@ -53,3 +53,10 @@
                                  bdata))
   (bytes->string/utf-8 (base64-encode (hmac-sha256 (base64-decode (string->bytes/utf-8 secret))
                                                      prefixed))))
+
+(module+ test
+  (require "config.rkt")
+  (define get-config (create-config "~/kraken.yaml"))
+  (define postdata '([hest . "hjort"]
+                     [nonce . "1547494295437"]))
+  (sign postdata "/0/private/Balance" (get-config "secret")))
