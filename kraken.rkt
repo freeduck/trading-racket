@@ -46,11 +46,14 @@
 (define (sign data path secret)
   (define postdata (alist->form-urlencoded data))
   (define bpath (string->bytes/utf-8 path))
-  (define bdata (sha256 (string->bytes/utf-8 (string-append (cdr (assoc 'nonce
-                                                                        data))
-                                                            postdata))))
+  (define strdata (string-append (cdr (assoc 'nonce
+                                             data))
+                                 postdata))
+  (println strdata)
+  (define bdata (sha256 (string->bytes/utf-8 strdata)))
   (define prefixed (bytes-append bpath
                                  bdata))
+  (println prefixed)
   (bytes->string/utf-8 (base64-encode (hmac-sha256 (base64-decode (string->bytes/utf-8 secret))
                                                      prefixed))))
 
