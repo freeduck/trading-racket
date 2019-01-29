@@ -44,7 +44,10 @@
   (println "Hello, World!"))
 
 (module+ test
+  ;; secret: 2hC9xDAdhO287Y9DN4VSlfk3KwDKU0HKjSZbgteNZPA=
   ;; Signature data
+  ;; Nonce
+  ;; 1547494295437
   ;; Postdata
   ;; hest=hjort&nonce=1547494295437
   ;; Encoded
@@ -52,12 +55,12 @@
   ;; Message
   ;; b'/0/private/Balance,5\x8b\xfb\xab\xd5\x81L\xfc~P>\x19A\x81\xe3s\xc6\x87\x98\t\xe0\xac\xcf\x0e\x98\x7fK\xc5z\x0c\xb4'
   ;; Signature
-  ;; <hmac.HMAC object at 0x7fda917935c0>
+  ;; <hmac.HMAC object at 0x7f63c1359358>
   ;; Sigdigest
-  ;; b'U1ELyaQAlkTY8ABOQ1YZ6TbiWf7oHYNMCL9Z+fQEV/Zb0MR7xAUnwKkczuh8fewShhWV94eWLpQENZZ8qUeCeA=='
+  ;; b'CYFZRiKjZTxnJ3igk7b4iskEFKq4vn8v7vZwOcQ3KkqCXCEkDetwv+lCLw9e6a8Hs0LNlpL3R2Bepbzoo7aI2Q=='
   ;; Sigdigest decoded
-  ;; <built-in method decode of bytes object at 0x7fda932488b0>
-  ;; U1ELyaQAlkTY8ABOQ1YZ6TbiWf7oHYNMCL9Z+fQEV/Zb0MR7xAUnwKkczuh8fewShhWV94eWLpQENZZ8qUeCeA==
+  ;; CYFZRiKjZTxnJ3igk7b4iskEFKq4vn8v7vZwOcQ3KkqCXCEkDetwv+lCLw9e6a8Hs0LNlpL3R2Bepbzoo7aI2Q==
+
   (require rackunit)
   (define get-config (create-config "~/kraken.yaml"))
   (define postdata '([hest . "hjort"]
