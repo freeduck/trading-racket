@@ -4,7 +4,8 @@
                "rackunit-lib"
                "http"
                "yaml"
-               "sha"))
+               "sha"
+               "crypto-lib"))
 (define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/crypto-trading.scrbl" ())))
 (define pkg-desc "Description Here")
