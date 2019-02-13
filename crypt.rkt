@@ -6,12 +6,12 @@
 (crypto-factories (list libcrypto-factory))
 (provide sign sha-256 hmac-sha512)
 
-(define (sha-256 str)
-  (digest 'sha256 str))
+(define (sha-256 message)
+  (digest 'sha256 message))
 
-(define (hmac-sha512 secret payload)
+(define (hmac-sha512 secret message)
   (hmac 'sha512 secret
-        payload))
+        message))
 
 (define (sign data path secret)
   (define postdata (alist->form-urlencoded data))
