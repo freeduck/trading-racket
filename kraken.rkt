@@ -1,7 +1,8 @@
 #lang racket
 (require http/request)
 (require net/http-client json)
-(require net/uri-codec net/base64 sha)
+(require net/uri-codec net/base64)
+(require "crypt.rkt")
 (provide asset-info balance sign)
 (define (list-assets)
   (define-values (in out) (connect "http" "www.google.com" 80))
@@ -42,20 +43,6 @@
                                                     sig))))
     (define data (read-json response))
     (println data)))
-
-(define (sign data path secret)
-  (define postdata (alist->form-urlencoded data))
-  (define bpath (string->bytes/utf-8 path))
-  (define strdata (string-append (cdr (assoc 'nonce
-                                             data))
-                                 postdata))
-  (println strdata)
-  (define bdata (sha256 (string->bytes/utf-8 strdata)))
-  (define prefixed (bytes-append bpath
-                                 bdata))
-  (println prefixed)
-  (bytes->string/utf-8 (base64-encode (hmac-sha256 (base64-decode (string->bytes/utf-8 secret))
-                                                     prefixed))))
 
 (module+ test
   (require "config.rkt")
