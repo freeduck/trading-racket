@@ -4,10 +4,14 @@
           crypto/libcrypto
           net/base64)
 (crypto-factories (list libcrypto-factory))
-(provide sha-256)
+(provide sign sha-256 hmac-sha512)
 
 (define (sha-256 str)
   (digest 'sha256 str))
+
+(define (hmac-sha512 secret payload)
+  (hmac 'sha512 secret
+        payload))
 
 (define (sign data path secret)
   (define postdata (alist->form-urlencoded data))
@@ -19,7 +23,7 @@
   (define prefixed (bytes-append (string->bytes/utf-8 path) hashed))
   (println (string-append "Prefix 64: " (bytes->string/utf-8 (base64-encode prefixed))))
 
-  (define signature (hmac 'sha512 (base64-decode (string->bytes/utf-8 secret))
+  (define signature (hmac-sha512 (base64-decode (string->bytes/utf-8 secret))
                                  prefixed))
   (bytes->string/utf-8 (base64-encode signature "")))
 
