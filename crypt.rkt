@@ -17,12 +17,8 @@
   (define postdata (alist->form-urlencoded data))
   (define payload (string-append (cdr (assoc 'nonce data))
                                  postdata))
-  (println (string-append "Payload: " payload))
   (define hashed (sha-256 payload))
-  (println (string-append "Hashed 64: " (string-trim (bytes->string/utf-8 (base64-encode hashed)))))
   (define prefixed (bytes-append (string->bytes/utf-8 path) hashed))
-  (println (string-append "Prefix 64: " (bytes->string/utf-8 (base64-encode prefixed))))
-
   (define signature (hmac-sha512 (base64-decode (string->bytes/utf-8 secret))
                                  prefixed))
   (bytes->string/utf-8 (base64-encode signature "")))
