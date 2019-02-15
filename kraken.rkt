@@ -48,4 +48,5 @@
   (define get-config (create-config "~/kraken.yaml"))
   (define postdata '([hest . "hjort"]
                      [nonce . "1547494295437"]))
-  (sign postdata "/0/private/Balance" (get-config "secret")))
+  (balance (get-config "key")
+           (get-config "secret")))
