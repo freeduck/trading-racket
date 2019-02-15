@@ -33,7 +33,7 @@
     (define-values (status header response)
       (http-sendrecv "api.kraken.com"
                      path
-                     #:ssl? 'tls
+                     #:ssl? #t
                      #:method "POST"
                      #:data (alist->form-urlencoded post-data)
                      #:headers (list (string-append "API-key: "
