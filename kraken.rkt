@@ -23,13 +23,12 @@
   (println data))
 
 (define (balance apikey secret)
-  (let* ([nonse (number->string
+  (let* ([nonce (number->string
                  (current-milliseconds))]
          [version "0"]
          [query-path "private/Balance"]
          [path (string-append "/" version "/" query-path)]
-         [post-data (list
-                     (cons 'nonse nonse))]
+         [post-data (list (cons 'nonce  nonce))]
          [sig (sign post-data path secret)])
     (define-values (status header response)
       (http-sendrecv "api.kraken.com"
