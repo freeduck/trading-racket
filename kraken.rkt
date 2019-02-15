@@ -3,7 +3,7 @@
 (require net/http-client json)
 (require net/uri-codec net/base64)
 (require "crypt.rkt")
-(provide asset-info balance sign)
+(provide asset-info balance)
 (define (list-assets)
   (define-values (in out) (connect "http" "www.google.com" 80))
   (println in)
