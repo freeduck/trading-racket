@@ -22,6 +22,31 @@
   (define data (read-json response))
   (println data))
 
+(define (buy apikey secret amount)
+  (let* ([nonce (number->string
+                 (current-milliseconds))]
+         [version "0"]
+         [query-path "private/AddOrder"]
+         [path (string-append "/" version "/" query-path)]
+         [post-data (list (cons 'ordertype "market")
+                          (cons 'pair "XMREUR")
+                          (cons 'type "buy")
+                          (cons 'nonce  nonce)
+                          (cons 'volume (number->string amount)))]
+         [sig (sign post-data path secret)])
+    (define-values (status header response)
+      (http-sendrecv "api.kraken.com"
+                     path
+                     #:ssl? #t
+                     #:method "POST"
+                     #:data (alist->form-urlencoded post-data)
+                     #:headers (list (string-append "API-key: "
+                                                    apikey)
+                                     (string-append "API-sign: "
+                                                    sig))))
+    (define data (read-json response))
+    (println data)))
+
 (define (balance apikey secret)
   (let* ([nonce (number->string
                  (current-milliseconds))]
@@ -46,7 +71,6 @@
 (module+ test
   (require "config.rkt")
   (define get-config (create-config "~/kraken.yaml"))
-  (define postdata '([hest . "hjort"]
-                     [nonce . "1547494295437"]))
-  (balance (get-config "key")
-           (get-config "secret")))
+  (buy (get-config "key")
+       (get-config "secret")
+       1))
