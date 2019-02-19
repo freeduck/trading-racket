@@ -7,4 +7,5 @@
 
 (define rows (query-rows *db*
                          "select start,open from candles_EUR_XMR"))
-(plot-with-x-as-time (list (points rows)))
+(parameterize ([plot-new-window? #t])
+  (plot-with-x-as-time (list (points rows))))
