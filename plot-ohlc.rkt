@@ -6,5 +6,5 @@
 (provide plot-with-x-as-time (all-from-out plot))
 
 (define (plot-with-x-as-time xy)
-  (parameterize ([plot-x-ticks (time-ticks)])
-    (plot xy)))
+  (parameterize ([plot-x-ticks (date-ticks)])
+    (plot-snip xy)))
