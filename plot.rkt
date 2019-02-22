@@ -26,7 +26,7 @@
 (define y-max (vector-ref (argmax (lambda (v)(vector-ref v 1)) rows) 1))
 
 (define  (make-2d-plot-snip data width height)
-  (define snip (plot-snip (list (points rows))
+  (define snip (plot-snip (list (lines rows))
                           #:x-min x-min #:x-max x-max
                           #:y-min y-min #:y-max y-max))
   (send snip set-mouse-event-callback mouse-callback)
