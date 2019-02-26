@@ -2,7 +2,8 @@
 (require db
          racket/gui
          mrlib/snip-canvas
-         plot)
+         plot
+         "fit.rkt")
 (define *db*
   (sqlite3-connect #:database
                    "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
@@ -26,7 +27,8 @@
 (define y-max (vector-ref (argmax (lambda (v)(vector-ref v 1)) rows) 1))
 
 (define  (make-2d-plot-snip data width height)
-  (define snip (plot-snip (list (lines rows))))
+  (define snip (plot-snip (list (lines data)
+                                (function (fitf data)))))
   (send snip set-mouse-event-callback mouse-callback)
   snip)
 
