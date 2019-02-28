@@ -8,7 +8,7 @@
   (sqlite3-connect #:database
                    "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
 (define x-min 1542579840)
-(define x-max (+ 1542579840 (* 3600 40)))
+(define x-max (+ 1542579840 (* 3600 42)))
 (define rows (query-rows *db*
                          "select start,open from candles_EUR_XMR where start >= $1 and start < $2"
                          x-min
@@ -27,6 +27,8 @@
 (define y-max (vector-ref (argmax (lambda (v)(vector-ref v 1)) rows) 1))
 
 (define  (make-2d-plot-snip data width height)
+  (println "Peak at")
+  (println (peak-at data))
   (define snip (plot-snip (list (lines data)
                                 (function (fitf data)))))
   (send snip set-mouse-event-callback mouse-callback)
