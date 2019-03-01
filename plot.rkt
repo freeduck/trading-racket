@@ -30,7 +30,7 @@
   (println "Peak at")
   (println (peak-at data))
   (define snip (plot-snip (list (lines data)
-                                (function (fitf data)))))
+                                (function (make-fitf data)))))
   (send snip set-mouse-event-callback mouse-callback)
   snip)
 

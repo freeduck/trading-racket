@@ -1,7 +1,7 @@
 #lang racket
 (require math plot)
 
-(provide poly fit fit-data extract transpose fitf peak-at)
+(provide poly fit fit-data extract transpose make-fitf peak-at)
 
 (define xs '(0 1  2  3  4  5   6   7   8   9  10))
 (define ys '(1 6 17 34 57 86 121 162 209 262 321))
@@ -30,7 +30,7 @@
     (* c (expt x i))))
 
 
-(define (fitf data)
+(define (make-fitf data)
   (poly (apply fit
                (append (transpose data)
                        '(2)))))
@@ -52,7 +52,7 @@
 
 (define (peak-at data)
   (let* [(xs (first (transpose data)))
-         (fitf (fitf data))
+         (fitf (make-fitf data))
          (x-max-y (x-for-max-y data xs fitf))
          (x-min-y (x-for-min-y data xs fitf))]
     (cond
