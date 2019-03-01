@@ -6,7 +6,9 @@
                    "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
 (define latest-trade 1542579840)
 (define hour-past-first-fit 1542734640)
-(for ([end (in-range (+ latest-trade 600) hour-past-first-fit 600)])
+(for/fold ([peak #f])
+          ([end (in-range (+ latest-trade 600) hour-past-first-fit 600)]
+           #:break peak)
   (let* ([rows (query-rows *db*
                           "select start,open from candles_EUR_XMR where start >= $1 and start < $2"
                           latest-trade
