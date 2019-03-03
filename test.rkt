@@ -1,7 +1,8 @@
 #lang racket
 (require db
          "fit.rkt"
-         "data.rkt")
+         "data.rkt"
+         "plot.rkt")
 (define *db*
   (sqlite3-connect #:database
                    "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
@@ -22,3 +23,10 @@
 
 (define (first-peak)
   (scan-window latest-trade hour-past-first-fit (select-window *db*)))
+
+(module+ test
+  (define data-source (select-window *db*))
+  (define rows (data-source latest-trade hour-past-first-fit))
+  (define first-peak (scan-window latest-trade hour-past-first-fit data-source))
+  (define first-curve (data-source latest-trade first-peak))
+  (define fitf (make-fitf first-curve)))
