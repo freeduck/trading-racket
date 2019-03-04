@@ -34,7 +34,7 @@
            crypto-trading/fit)
   (define x-min 1542579840)
   (define x-max (+ 1542579840 (* 3600 42)))
-  (define rows (data-source x-min x-max))
+  (define rows (test-data-source x-min x-max))
   (define y-min (vector-ref (argmin (lambda (v)(vector-ref v 1)) rows) 1))
   (define y-max (vector-ref (argmax (lambda (v)(vector-ref v 1)) rows) 1))
   (define plotables (list (lines rows)

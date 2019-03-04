@@ -23,7 +23,7 @@ tests are in ./test.rkt also testing plot
 #+name: data-sorce
 #+begin_src racket :results output drawer :noweb yes
   (require crypto-trading/data)
-  (define data-source (select-window *db*))
+  (define test-data-source (select-window *db*))
 #+end_src
 
 #+name: plot-first-peak-target
@@ -32,7 +32,7 @@ tests are in ./test.rkt also testing plot
   (require crypto-trading/test-data
            crypto-trading/plot
            crypto-trading/fit)
-  (define rows (data-source first-trade second-trade-target))
+  (define rows (test-data-source first-trade second-trade-target))
   (define plotables (list (lines rows)
                           (function (make-fitf rows))))
   (plot-on-frame plotables)
@@ -48,8 +48,8 @@ tests are in ./test.rkt also testing plot
   (require crypto-trading/test
            crypto-trading/plot)
   (define-values (first-peak fitf)
-    (scan-window first-trade second-trade-target data-source))
-  (define peak-rows (data-source first-trade first-peak))
+    (scan-window first-trade second-trade-target test-data-source))
+  (define peak-rows (test-data-source first-trade first-peak))
   (println (round (/ (- first-peak first-trade) 60)))
   (println (string-append (number->string (fitf first-trade))
                           " "

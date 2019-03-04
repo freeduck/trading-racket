@@ -22,10 +22,10 @@
       (values apeak fitf))))
 
 (module+ test
-  ;; (define data-source data-source)
-  (define rows (data-source latest-trade hour-past-first-fit))
-  (define-values (first-peak fitf) (scan-window latest-trade hour-past-first-fit data-source))
-  (define peak-rows (data-source latest-trade first-peak))
+  ;; (define test-data-source test-data-source)
+  (define rows (test-data-source latest-trade hour-past-first-fit))
+  (define-values (first-peak fitf) (scan-window latest-trade hour-past-first-fit test-data-source))
+  (define peak-rows (test-data-source latest-trade first-peak))
   (define plotables (list (lines rows)
                           (lines peak-rows)
                           (function fitf latest-trade first-peak)))
