@@ -1,25 +1,43 @@
+# -*- org-use-property-inheritance: t; org-confirm-babel-evaluate: nil;-*-
 * Notes
 ** First dataset
  2018-11-18 22:21:00
 
  2019-02-18 22:21:00
  [[file:2018-11-18-22:21:00-2019-02-18-22:21:00.db]]
-** Test
+** COMMENT Test
 tests are in ./test.rkt also testing plot
-#+BEGIN_SRC racket :results output
-  #lang racket
-  (require racket/set)
-  (for/set ([i (in-range 10)])
-    i)
-#+END_SRC
 
-#+RESULTS:
-: (set 1 5 9 3 7 0 4 8 2 6)
+#+name: test-data
+#+begin_src racket :results output drawer :noweb yes
+  (require db)
+  (define *db*
+    (sqlite3-connect #:database
+                     "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
+#+end_src
 
-#+begin_src racket :results output
+#+RESULTS: test-data
+:results:
+:end:
+
+#+name: data-sorce
+#+begin_src racket :results output drawer :noweb yes
+  (require crypto-trading/data)
+  (define data-source (select-window *db*))
+#+end_src
+
+
+#+begin_src racket :results output drawer :noweb yes
   #lang racket
+  <<test-data>>
+  <<data-sorce>>
   (require crypto-trading/plot)
-
+  (define latest-trade 1542579840)
+  (define hour-past-first-fit 1542734640)
+  (define rows (data-source latest-trade hour-past-first-fit))
+  (plot-on-frame (list (lines rows)))
 #+end_src
 
 #+RESULTS:
+:results:
+:end:
