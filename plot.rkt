@@ -1,8 +1,7 @@
 #lang racket
 (require racket/gui
          mrlib/snip-canvas
-         plot
-         "fit.rkt")
+         plot)
 (provide plot-on-frame (all-from-out plot))
 
 (define (mouse-callback snip event x y)
@@ -31,7 +30,8 @@
   (send toplevel show #t))
 
 (module+ test
-  (require crypto-trading/test-data)
+  (require crypto-trading/test-data
+           crypto-trading/fit)
   (define x-min 1542579840)
   (define x-max (+ 1542579840 (* 3600 42)))
   (define rows (data-source x-min x-max))
