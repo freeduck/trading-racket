@@ -6,3 +6,20 @@
  [[file:2018-11-18-22:21:00-2019-02-18-22:21:00.db]]
 ** Test
 tests are in ./test.rkt also testing plot
+#+BEGIN_SRC racket :results output
+  #lang racket
+  (require racket/set)
+  (for/set ([i (in-range 10)])
+    i)
+#+END_SRC
+
+#+RESULTS:
+: (set 1 5 9 3 7 0 4 8 2 6)
+
+#+begin_src racket :results output
+  #lang racket
+  (require crypto-trading/plot)
+
+#+end_src
+
+#+RESULTS:
