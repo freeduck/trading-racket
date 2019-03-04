@@ -26,7 +26,7 @@ tests are in ./test.rkt also testing plot
   (define data-source (select-window *db*))
 #+end_src
 
-
+#+name: plot-first-peak
 #+begin_src racket :results output drawer :noweb yes
   #lang racket
   <<test-data>>
