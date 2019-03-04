@@ -12,13 +12,16 @@
 (define hour-past-first-fit 1542734640)
 
 (define (scan-window start end row-db)
-  (for/fold ([peak #f])
+  (for/fold ([apeak #f]
+             [fitf #f])
             ([current (in-range (+ start 600) end 600)]
-             #:break peak)
-    (let* ([rows (row-db start current)]
-           [peak (peak-at rows)])
-      (when peak
-        peak))))
+             #:break apeak)
+    (let*-values ([(rows) (row-db start current)]
+                  [(peak fitf) (peak-at rows)]
+                  [(apeak) (if peak
+                               peak
+                               apeak)])
+      (values apeak fitf))))
 
 
 (define (first-peak)
@@ -27,6 +30,9 @@
 (module+ test
   (define data-source (select-window *db*))
   (define rows (data-source latest-trade hour-past-first-fit))
-  (define first-peak (scan-window latest-trade hour-past-first-fit data-source))
-  (define first-curve (data-source latest-trade first-peak))
-  (define fitf (make-fitf first-curve)))
+  (define plotables (list (lines rows)))
+  (plot-on-frame plotables)
+  ;; (define first-peak (scan-window latest-trade hour-past-first-fit data-source))
+  ;; (define first-curve (data-source latest-trade first-peak))
+  ;; (define fitf (make-fitf first-curve))
+  )
