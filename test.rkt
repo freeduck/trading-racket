@@ -27,12 +27,26 @@
 (define (first-peak)
   (scan-window latest-trade hour-past-first-fit (select-window *db*)))
 
+(define (plot-peaks)
+  (define data-source (select-window *db*))
+  (define rows (data-source latest-trade hour-past-first-fit))
+  (define-values (first-peak fitf) (scan-window latest-trade hour-past-first-fit data-source))
+  (define peak-rows (data-source latest-trade first-peak))
+  (define plotables (list
+
+                          (function fitf latest-trade first-peak)))
+  (plot-on-frame plotables))
+
 (module+ test
   (define data-source (select-window *db*))
   (define rows (data-source latest-trade hour-past-first-fit))
-  (define plotables (list (lines rows)))
+  (define-values (first-peak fitf) (scan-window latest-trade hour-past-first-fit data-source))
+  (define peak-rows (data-source latest-trade first-peak))
+  (define plotables (list (lines rows)
+                          (lines peak-rows)
+                          (function fitf latest-trade first-peak)))
   (plot-on-frame plotables)
-  ;; (define first-peak (scan-window latest-trade hour-past-first-fit data-source))
+
   ;; (define first-curve (data-source latest-trade first-peak))
   ;; (define fitf (make-fitf first-curve))
   )
