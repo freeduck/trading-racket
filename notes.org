@@ -54,7 +54,8 @@ tests are in ./test.rkt also testing plot
   (println (string-append (number->string (fitf first-trade))
                           " "
                           (number->string(fitf first-peak))))
-  (plot-on-frame (list (points peak-rows)))
+  (plot-on-frame (list (points peak-rows)
+                       (function fitf)))
 #+end_src
 
 #+RESULTS: plot-first-peak-no-filters
