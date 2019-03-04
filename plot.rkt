@@ -4,7 +4,7 @@
          mrlib/snip-canvas
          plot
          "fit.rkt")
-(provide (all-from-out plot))
+(provide plot-on-frame (all-from-out plot))
 
 (define (mouse-callback snip event x y)
   (if (and x y)
