@@ -1,11 +1,9 @@
 #lang racket
-(require db
-         "fit.rkt"
-         "data.rkt"
-         "plot.rkt")
-(define *db*
-  (sqlite3-connect #:database
-                   "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
+(require "fit.rkt"
+         "plot.rkt"
+         crypto-trading/test-data)
+
+(provide scan-window)
 
 (define latest-trade 1542579840)
 
@@ -25,10 +23,10 @@
 
 
 (define (first-peak)
-  (scan-window latest-trade hour-past-first-fit (select-window *db*)))
+  (scan-window latest-trade hour-past-first-fit data-source))
 
 (define (plot-peaks)
-  (define data-source (select-window *db*))
+  ;; (define data-source data-source)
   (define rows (data-source latest-trade hour-past-first-fit))
   (define-values (first-peak fitf) (scan-window latest-trade hour-past-first-fit data-source))
   (define peak-rows (data-source latest-trade first-peak))
@@ -38,15 +36,11 @@
   (plot-on-frame plotables))
 
 (module+ test
-  (define data-source (select-window *db*))
+  ;; (define data-source data-source)
   (define rows (data-source latest-trade hour-past-first-fit))
   (define-values (first-peak fitf) (scan-window latest-trade hour-past-first-fit data-source))
   (define peak-rows (data-source latest-trade first-peak))
   (define plotables (list (lines rows)
                           (lines peak-rows)
                           (function fitf latest-trade first-peak)))
-  (plot-on-frame plotables)
-
-  ;; (define first-curve (data-source latest-trade first-peak))
-  ;; (define fitf (make-fitf first-curve))
-  )
+  (plot-on-frame plotables))
