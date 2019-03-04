@@ -54,13 +54,14 @@
   (let* [(xs (first (transpose data)))
          (fitf (make-fitf data))
          (x-max-y (x-for-max-y data xs fitf))
-         (x-min-y (x-for-min-y data xs fitf))]
-    (cond
-      [(and (not (= x-max-y (first xs)))
-            (not (= x-max-y (last xs)))) x-max-y]
-      [(and (not (= x-min-y (first xs)))
-            (not (= x-min-y (last xs)))) x-min-y]
-      [else #f])))
+         (x-min-y (x-for-min-y data xs fitf))
+         (peak (cond
+                 [(and (not (= x-max-y (first xs)))
+                       (not (= x-max-y (last xs)))) x-max-y]
+                 [(and (not (= x-min-y (first xs)))
+                       (not (= x-min-y (last xs)))) x-min-y]
+                 [else #f]))]
+    (values peak fitf)))
 
 
 
