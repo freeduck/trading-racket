@@ -3,7 +3,7 @@
          "plot.rkt"
          crypto-trading/test-data)
 
-(provide scan-window)
+(provide scan-window (all-from-out crypto-trading/test-data))
 
 (define latest-trade 1542579840)
 
