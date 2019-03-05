@@ -63,3 +63,5 @@ tests are in ./test.rkt also testing plot
 4
 "72.4375 79.5"
 :end:
+** TODO least squares comparison between linear and poly models
+Maybe look into "Polynomial least squares"
