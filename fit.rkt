@@ -1,7 +1,7 @@
 #lang racket
 (require math plot)
 
-(provide linear-regression poly fit fit-data extract transpose make-fitf peak-at)
+(provide evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at)
 
 (define xs '(0 1  2  3  4  5   6   7   8   9  10))
 (define ys '(1 6 17 34 57 86 121 162 209 262 321))
@@ -79,7 +79,25 @@
                  [else #f]))]
     (values peak fitf)))
 
-
+(define (evaluate-models data . functions)
+  (first (foldl (lambda (error-sum-f f)
+                  (if (not f)
+                      error-sum-f
+                      (if (< (second error-sum-f)
+                             (second f))
+                          error-sum-f
+                          f)))
+                #f
+                (let* ([errors (for*/list ([f functions]
+                                           [data-point data])
+                                 (let* ([estimate (f (vector-ref data-point 0))]
+                                        [error^2 (expt (- (vector-ref data-point 1) estimate) 2)])
+                                   (list f error^2)))])
+                  (for/list ((f functions))
+                    (let ([ferrors (takef errors (lambda (error-point)
+                                                   (equal? (first error-point) f)))])
+                      (list f (for/sum ((error-point ferrors))
+                                (second error-point)))))))))
 
 ;; (module+ test
 ;;   (require db)

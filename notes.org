@@ -65,23 +65,24 @@ tests are in ./test.rkt also testing plot
 :end:
 #+name: plot-first-peak-no-filters-linear-regression
 #+begin_src racket :results output drawer
-    #lang racket
-    (require crypto-trading/test
-             crypto-trading/plot
-             crypto-trading/fit)
-    (define-values (first-peak fitf)
-      (scan-window first-trade second-trade-target test-data-source))
-    (define peak-rows (test-data-source first-trade first-peak))
-    (define-values (a b lfitf) (linear-regression (map vector->list peak-rows)))
-    (plot-on-frame (list (points peak-rows)
-                         (function fitf)
-                         (function lfitf)))
-
-
+  #lang racket
+  (require crypto-trading/test
+           crypto-trading/plot
+           crypto-trading/fit)
+  (define-values (first-peak fitf)
+    (scan-window first-trade second-trade-target test-data-source))
+  (define peak-rows (test-data-source first-trade first-peak))
+  (define-values (a b lfitf) (linear-regression (map vector->list peak-rows)))
+  (define best-fit (evaluate-models peak-rows fitf lfitf))
+  (plot-on-frame (list (points peak-rows)
+                       (function fitf)
+                       (function lfitf)))
+  best-fit
 #+end_src
 
 #+RESULTS: plot-first-peak-no-filters-linear-regression
 :results:
+#<procedure:...-trading/fit.rkt:22:14>
 :end:
 
 ** TODO least squares comparison between linear and poly models
