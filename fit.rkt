@@ -1,10 +1,25 @@
 #lang racket
 (require math plot)
 
-(provide poly fit fit-data extract transpose make-fitf peak-at)
+(provide linear-regression poly fit fit-data extract transpose make-fitf peak-at)
 
 (define xs '(0 1  2  3  4  5   6   7   8   9  10))
 (define ys '(1 6 17 34 57 86 121 162 209 262 321))
+;; points : (listof (list/c real real)) ; list of (x y) coordinates
+;; Returns a, b and f(x)=ax+b.
+;; Source: https://gist.githubusercontent.com/spdegabrielle/f28cd93ffca4e3086d2ab0bd66bd802d/raw/cd526b64f19a1c5cfc3d9d626fa58cddd497d3d6/Metaxal-bazaar-math.rkt
+(define (linear-regression points)
+  (define n (length points))
+  (define xs (map first points))
+  (define ys (map second points))
+  (define sum-x (apply + xs))
+  (define sum-y (apply + ys))
+  (define sum-x2 (apply + (map sqr xs)))
+  (define sum-xy (apply + (map * xs ys)))
+  (define a (/ (- sum-xy (* (/ n) sum-x sum-y))
+               (- sum-x2 (* (/ n) (sqr sum-x)))))
+  (define b (/ (- sum-y (* a sum-x)) n))
+  (values a b (λ(x)(+ (* a x) b))))
 ;; Polynomial/Multiple regression
 ;; Source: https://rosettacode.org/wiki/Category:Racket
 (define (fit x y n)

@@ -63,5 +63,26 @@ tests are in ./test.rkt also testing plot
 4
 "72.4375 79.5"
 :end:
+#+name: plot-first-peak-no-filters-linear-regression
+#+begin_src racket :results output drawer
+    #lang racket
+    (require crypto-trading/test
+             crypto-trading/plot
+             crypto-trading/fit)
+    (define-values (first-peak fitf)
+      (scan-window first-trade second-trade-target test-data-source))
+    (define peak-rows (test-data-source first-trade first-peak))
+    (define-values (a b lfitf) (linear-regression (map vector->list peak-rows)))
+    (plot-on-frame (list (points peak-rows)
+                         (function fitf)
+                         (function lfitf)))
+
+
+#+end_src
+
+#+RESULTS: plot-first-peak-no-filters-linear-regression
+:results:
+:end:
+
 ** TODO least squares comparison between linear and poly models
 Maybe look into "Polynomial least squares"
