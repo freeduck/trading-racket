@@ -1,7 +1,7 @@
 #lang racket
 (require math plot)
 
-(provide squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at)
+(provide find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at)
 
 (define xs '(0 1  2  3  4  5   6   7   8   9  10))
 (define ys '(1 6 17 34 57 86 121 162 209 262 321))
@@ -102,6 +102,15 @@
 (define (squared-error fitf data)
   (for/sum ((data-point data))
     (expt (- (vector-ref data-point 1) (fitf (vector-ref data-point 0))) 2)))
+
+(define (find-peak rows)
+  (define-values (a b lfit) (linear-regression (map vector->list rows)))
+  (define pfit (make-fitf rows))
+  (define les (squared-error lfit rows))
+  (define pes (squared-error pfit rows))
+  (if (< les pes)
+      #f
+      pfit))
 ;; (module+ test
 ;;   (require db)
 ;;   (require "data.rkt")

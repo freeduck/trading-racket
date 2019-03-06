@@ -114,3 +114,21 @@ makes a better fit.
 :results:
 '(0.002749090908243732 66.56590468749998)
 :end:
+#+name: find-target-peak
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test
+           crypto-trading/plot
+           crypto-trading/fit)
+
+  (define first-10-minutes-rows (test-data-source first-trade (+ 600 first-trade)))
+  (define 10-min-peak (find-peak first-10-minutes-rows))
+  (define first-target-rows (test-data-source first-trade second-trade-target))
+  (define trade-peak (find-peak first-target-rows))
+  (list 10-min-peak trade-peak)
+#+end_src
+
+#+RESULTS: find-peak
+:results:
+'(#f #<procedure:...-trading/fit.rkt:44:0>)
+:end:
