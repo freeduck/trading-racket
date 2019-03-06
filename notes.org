@@ -114,6 +114,3 @@ makes a better fit.
 :results:
 '(0.002749090908243732 66.56590468749998)
 :end:
-
-** TODO least squares comparison between linear and poly models
-Maybe look into "Polynomial least squares"
