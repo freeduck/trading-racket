@@ -113,6 +113,8 @@ makes a better fit.
 :results:
 '(0.002749090908243732 66.56590468749998)
 :end:
+Test find-peak:
+Target peak can be detected and situations where linear regression fit better no peak is found
 #+name: find-target-peak
 #+begin_src racket :results output drawer
   #lang racket
@@ -129,4 +131,43 @@ makes a better fit.
 #+RESULTS: find-peak
 :results:
 '(#f #<procedure:...-trading/fit.rkt:44:0>)
+:end:
+Find first peak using find-peak as filter when scanning
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test
+           crypto-trading/fit)
+
+  (define first-found-peak (find-first-peak test-data-source first-trade second-trade-target))
+  (define delta (- (first-found-peak) first-trade))
+  (define hours (exact->inexact (/ delta 3600)))
+  (println delta)
+  (println hours)
+
+#+end_src
+
+#+RESULTS:
+:results:
+7200
+2.0
+:end:
+
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test
+           crypto-trading/fit
+           crypto-trading/plot)
+
+  (define first-found-peak (find-first-peak test-data-source first-trade second-trade-target))
+  (define rows (test-data-source first-trade (first-found-peak)))
+  (define analysis (trade-report-analysis first-found-peak))
+  (plot-on-frame (list (lines rows)
+                       (function (regression-analysis-linearfun analysis))
+                       (function (regression-analysis-polyfun analysis))))
+  (displayln (regression-analysis-linear-slope analysis))
+#+end_src
+
+#+RESULTS:
+:results:
+0.00011637961346298162
 :end:

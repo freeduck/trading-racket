@@ -3,7 +3,9 @@
          "plot.rkt"
          crypto-trading/test-data)
 
-(provide scan-window (all-from-out crypto-trading/test-data))
+(provide find-first-peak scan-window
+         (all-from-out crypto-trading/test-data)
+         (struct-out trade-report))
 
 (define latest-trade 1542579840)
 
@@ -20,6 +22,17 @@
                                peak
                                apeak)])
       (values apeak fitf))))
+(struct trade-report (timestamp analysis)
+  #:property prop:procedure (lambda (self)(trade-report-timestamp self)))
+(define (find-first-peak data-source start end [step 600])
+  (for/fold ([t #f])
+            ([current (in-range (+ start step) end step)]
+             #:break t)
+    (cond
+      [(find-peak (data-source start current)) =>
+                                               (lambda (a)
+                                                 (trade-report current a))]
+      [else #f])))
 
 (module+ test
   ;; (define test-data-source test-data-source)
