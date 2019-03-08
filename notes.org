@@ -171,3 +171,21 @@ Find first peak using find-peak as filter when scanning
 :results:
 0.00011637961346298162
 :end:
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/advicer
+           crypto-trading/test)
+  ;; First target - advice should be 'buy
+  ((get-advice (test-data-source first-trade second-trade-target)))
+  ;; first 10 minutes should be 'wait
+  ((get-advice (test-data-source first-trade (+ 600 first-trade))))
+#+end_src
+
+#+RESULTS:
+:results:
+'buy
+'wait
+:end:
+
+** TODO get advice with filters
+(get-advice data-source :pre-regression-test ((lambda (data-set)(let ([treshold (* 0.002 (first data-set))])
