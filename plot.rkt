@@ -38,5 +38,6 @@
   (define y-min (vector-ref (argmin (lambda (v)(vector-ref v 1)) rows) 1))
   (define y-max (vector-ref (argmax (lambda (v)(vector-ref v 1)) rows) 1))
   (define plotables (list (lines rows)
-                          (function (make-fitf rows))))
+                          (function (let-values ([(v fitf) (make-fitf rows)])
+                                      fitf))))
   (plot-on-frame plotables))

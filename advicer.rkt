@@ -13,13 +13,19 @@
          [current-prize (vector-ref (last time-series) 1)]
          [prize-delta (abs (- current-prize prize-last-trade))]
          [get-slope regression-analysis-linear-slope]
-         [make-advice (lambda (analysis)
-                        (trade-advice (if (> (get-slope analysis) 0)
-                                          'sell
-                                          'buy)
-                                      analysis))]
+         [get-coeff regression-analysis-coefficient-1st-exponent]
+         [eval-analysis (lambda (analysis)
+                        (let ([coeff (get-coeff analysis)]
+                              [slope (get-slope analysis)])
+                          (cond [(and (> slope 0)
+                                      (> coeff 0))
+                                 (trade-advice 'sell analysis)]
+                                [(and (< slope 0)
+                                      (< coeff 0))
+                                 (trade-advice 'buy analysis)]
+                                [else #f])))]
          [wait (lambda () 'wait)])
     (if (< prize-delta threshold)
         #f
-        (cond [(find-peak time-series) => make-advice]
+        (cond [(find-peak time-series) => eval-analysis]
               [else #f]))))

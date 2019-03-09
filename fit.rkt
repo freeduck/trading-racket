@@ -48,9 +48,10 @@
 
 
 (define (make-fitf data)
-  (poly (apply fit
-               (append (transpose data)
-                       '(2)))))
+  (define fit-vector (apply fit
+                            (append (transpose data)
+                                    '(2))))
+  (values fit-vector (poly fit-vector)))
 
 (define (x-for-_-y data xs fitf operator)
   (foldl (lambda (x a)
@@ -69,7 +70,8 @@
 
 (define (peak-at data)
   (let* [(xs (first (transpose data)))
-         (fitf (make-fitf data))
+         (fitf (let-values ([(v fitf) (make-fitf data)])
+                 fitf))
          (x-max-y (x-for-max-y data xs fitf))
          (x-min-y (x-for-min-y data xs fitf))
          (peak (cond
@@ -104,16 +106,19 @@
   (for/sum ((data-point data))
     (expt (- (vector-ref data-point 1) (fitf (vector-ref data-point 0))) 2)))
 
-(struct regression-analysis (polyfun linearfun linear-slope))
+(struct regression-analysis (polyfun
+                             linearfun
+                             linear-slope
+                             coefficient-1st-exponent))
 
 (define (find-peak rows)
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
-  (define pfit (make-fitf rows))
+  (define-values (v pfit) (make-fitf rows))
   (define les (squared-error lfit rows))
   (define pes (squared-error pfit rows))
   (if (< les pes)
       #f
-      (regression-analysis pfit lfit a)))
+      (regression-analysis pfit lfit a (vector-ref v 1))))
 ;; (module+ test
 ;;   (require db)
 ;;   (require "data.rkt")
