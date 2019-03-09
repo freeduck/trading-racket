@@ -192,6 +192,19 @@ Find first peak using find-peak as filter when scanning
 
 #+begin_src racket :results output drawer
   #lang racket
+  (require crypto-trading/test
+           crypto-trading/plot)
+
+  (define two-hour-rows (test-data-source first-trade 1542594240))
+  (plot-on-frame (list (lines two-hour-rows)))
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+#+begin_src racket :results output drawer
+  #lang racket
   (require crypto-trading/advicer
            crypto-trading/test
            crypto-trading/plot)
@@ -204,6 +217,35 @@ Find first peak using find-peak as filter when scanning
 #+RESULTS:
 :results:
 14400
+:end:
+#+begin_src racket :results output drawer
+  #lang racket
+
+  (require crypto-trading/test
+           crypto-trading/fit)
+  ;; Trailing bottom
+  (define rows (test-data-source first-trade second-trade-target))
+  (define x&y (transpose rows))
+  (define fitvector (apply fit (append x&y '(2))))
+  (displayln fitvector)
+  ;; Leading top peak 4 hour
+  (define first-advice-rows-any-peak (test-data-source first-trade 1542594240))
+  (define advice-x&y (transpose first-advice-rows-any-peak))
+  (define advice-vector (apply fit (append advice-x&y '(2))))
+  (displayln advice-vector)
+  ;; Trailing top peak 2 hour
+  (define 2h-rows (test-data-source first-trade (+ 7200 first-trade)))
+  (define 2h-x&y (transpose 2h-rows))
+  (define 2h-vector (apply fit (append 2h-x&y '(2))))
+  (displayln 2h-vector)
+
+#+end_src
+
+#+RESULTS:
+:results:
+#(2361157645.443029 -3.0610199421140973 9.920815046590834e-10)
+#(-68827289515.43556 89.23627567761474 -2.892425716572949e-08)
+#(-46450503479.14099 60.224184303559184 -1.9520522369660206e-08)
 :end:
 
 ** TODO get advice with filters
