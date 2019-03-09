@@ -177,14 +177,33 @@ Find first peak using find-peak as filter when scanning
            crypto-trading/test)
   ;; First target - advice should be 'buy
   ((get-advice (test-data-source first-trade second-trade-target)))
-  ;; first 10 minutes should be 'wait
+  ;; First 10 minutes should be 'wait. prize delta too small
   ((get-advice (test-data-source first-trade (+ 600 first-trade))))
+  ;; First two hours should be 'wait. prize delta too small
+  ((get-advice (test-data-source first-trade (+ 7200 first-trade))))
 #+end_src
 
 #+RESULTS:
 :results:
 'buy
 'wait
+'wait
+:end:
+
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/advicer
+           crypto-trading/test
+           crypto-trading/plot)
+  (define advice-index (find-first-advice (test-data-source first-trade second-trade-target)))
+  (define analysis (trade-report-analysis advice-index))
+  (plot-on-frame (list (lines (test-data-source first-trade (advice-index)))))
+  (displayln (- advice-index first-trade))
+#+end_src
+
+#+RESULTS:
+:results:
+14400
 :end:
 
 ** TODO get advice with filters

@@ -1,9 +1,12 @@
 #lang racket
 (require "fit.rkt"
          "plot.rkt"
-         crypto-trading/test-data)
+         crypto-trading/test-data
+         crypto-trading/advicer)
 
-(provide find-first-peak scan-window
+(provide find-first-advice
+         find-first-peak
+         scan-window
          (all-from-out crypto-trading/test-data)
          (struct-out trade-report))
 
@@ -22,8 +25,10 @@
                                peak
                                apeak)])
       (values apeak fitf))))
+
 (struct trade-report (timestamp analysis)
   #:property prop:procedure (lambda (self)(trade-report-timestamp self)))
+
 (define (find-first-peak data-source start end [step 600])
   (for/fold ([t #f])
             ([current (in-range (+ start step) end step)]
@@ -32,6 +37,21 @@
       [(find-peak (data-source start current)) =>
                                                (lambda (a)
                                                  (trade-report current a))]
+      [else #f])))
+
+(define (find-first-advice time-series [step 600])
+  (define time-index 0)
+  (define start (vector-ref (first time-series) time-index))
+  (define end (vector-ref (last time-series) time-index))
+  (for/fold ([t #f])
+            ([window-end (in-range start end step)]
+             #:break t)
+    (define window (takef time-series (lambda (data-point)
+                                        (<= (vector-ref data-point time-index)
+                                            window-end))))
+    (cond
+      [(get-advice window) => (lambda (a)
+                                (trade-report window-end a))]
       [else #f])))
 
 (module+ test
