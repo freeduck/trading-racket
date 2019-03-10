@@ -210,6 +210,7 @@ Find first peak using find-peak as filter when scanning
            crypto-trading/plot)
   (define advice-index (find-first-advice (test-data-source first-trade second-trade-target)))
   (define analysis (trade-report-analysis advice-index))
+  (displayln (advice-index))
   (plot-on-frame (list (lines (test-data-source first-trade second-trade-target))
                        (lines (test-data-source first-trade (advice-index))
                               #:color '(0 200 0))))
@@ -218,12 +219,23 @@ Find first peak using find-peak as filter when scanning
 
 #+RESULTS: plot-first-advice
 :results:
+1542659640
 22.166666666666668
 :end:
+Found with pre model filter: threshold 2% of previous trade. And only
+trailing peaks
+#+name: plot-first-real-advice
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test
+           crypto-trading/plot)
+  (plot-on-frame (list (lines (test-data-source first-trade second-trade-target))
+                       (lines (test-data-source first-trade 1542659640)
+                              #:color '(0 200 0))))
+#+end_src
 
 #+RESULTS:
 :results:
-22.166666666666668
 :end:
 #+name: fit-vector
 #+begin_src racket :results output drawer
