@@ -228,11 +228,35 @@ trailing peaks
 #+begin_src racket :results output drawer
   #lang racket
   (require crypto-trading/test
-           crypto-trading/plot)
+           crypto-trading/plot
+           crypto-trading/advicer)
+  (define advice (get-advice (test-data-source first-trade 1542659640)))
+  (define analysis (trade-advice-analysis advice))
+  (define polyfun (regression-analysis-polyfun analysis))
+  (define linearfun (regression-analysis-linearfun analysis))
+  (define time-series (test-data-source first-trade 1542659640))
+  (define last-data-point (last time-series))
+  (define poly-prediction (polyfun (vector-ref last-data-point 0)))
+  (define linear-prediction (linearfun (vector-ref last-data-point 0)))
+  (define prediction-diff (abs (- poly-prediction linear-prediction)))
+  (displayln "Diff")
+  (displayln prediction-diff)
   (plot-on-frame (list (lines (test-data-source first-trade second-trade-target))
+
                        (lines (test-data-source first-trade 1542659640)
-                              #:color '(0 200 0))))
+                              #:color '(0 200 0))
+                       (function polyfun first-trade 1542659640
+                                 #:color '(200 200 0))
+                       ;; (function linearfun first-trade 1542659640
+                       ;;           #:color '(0 200 200))
+                       ))
 #+end_src
+
+#+RESULTS: plot-first-real-advice
+:results:
+Diff
+0.03896740369964391
+:end:
 
 #+RESULTS:
 :results:

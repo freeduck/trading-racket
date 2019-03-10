@@ -1,7 +1,9 @@
 #lang racket
 (require crypto-trading/fit)
 
-(provide get-advice (struct-out trade-advice))
+(provide get-advice
+         (struct-out trade-advice)
+         (all-from-out crypto-trading/fit))
 
 (struct trade-advice (advice analysis)
   #:property prop:procedure (lambda (self)
