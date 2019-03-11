@@ -112,16 +112,21 @@
                              linearfun
                              linear-slope
                              coefficient-1st-exponent
-                             qv))
+                             qv
+                             xmom))
 
 (define (find-peak rows)
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
   (define-values (v pfit) (make-fitf rows))
   (define les (squared-error lfit rows))
   (define pes (squared-error pfit rows))
+  (define qa (vector-ref v 2))
+  (define qb (vector-ref v 1))
+  (define x-for-min-or-max (/ (- qb)
+                              (* 2 qa)))
   (if (< les pes)
       #f
-      (regression-analysis pfit lfit a (vector-ref v 1) v)))
+      (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max)))
 ;; (module+ test
 ;;   (require db)
 ;;   (require "data.rkt")

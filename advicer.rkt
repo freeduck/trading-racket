@@ -22,18 +22,21 @@
                                [slope (get-slope analysis)]
                                [polyfun (regression-analysis-polyfun analysis)]
                                [linearfun (regression-analysis-linearfun analysis)]
-                               [advice (cond [(and (> slope 0)
-                                                   (> coeff 0))
-                                              'sell]
-                                             [(and (< slope 0)
-                                                   (< coeff 0))
-                                              'buy]
-                                             [else #f])])
+                               [advice (if (< (regression-analysis-xmom analysis)
+                                              (vector-ref last-data-point 0))
+                                           (cond [(and (> slope 0)
+                                                       (> coeff 0))
+                                                  'sell]
+                                                 [(and (< slope 0)
+                                                       (< coeff 0))
+                                                  'buy]
+                                                 [else #f])
+                                           #f)])
                           (if advice
                               (let* ([poly-prediction (polyfun (vector-ref last-data-point 0))]
                                     [linear-prediction (linearfun (vector-ref last-data-point 0))]
                                     [prediction-diff (abs (- poly-prediction linear-prediction))])
-                                (if (> prediction-diff 2)
+                                (if (> prediction-diff 0.5)
                                     (trade-advice advice analysis)
                                     #f))
                               #f)))]
