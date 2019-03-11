@@ -309,3 +309,4 @@ Diff
 #(-46450503479.14099 60.224184303559184 -1.9520522369660206e-08)
 :end:
 ** TODO test that peak lies before now
+x for max on top -b/(2a)
