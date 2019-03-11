@@ -209,18 +209,25 @@ Find first peak using find-peak as filter when scanning
            crypto-trading/test
            crypto-trading/plot)
   (define advice-index (find-first-advice (test-data-source first-trade second-trade-target)))
-  (define analysis (trade-report-analysis advice-index))
+  (define advice (trade-report-analysis advice-index))
+  (define analysis (trade-advice-analysis advice))
+  (define polyfun (regression-analysis-polyfun analysis))
+  (define linearfun (regression-analysis-linearfun analysis))
   (displayln (advice-index))
   (plot-on-frame (list (lines (test-data-source first-trade second-trade-target))
                        (lines (test-data-source first-trade (advice-index))
-                              #:color '(0 200 0))))
+                              #:color '(0 200 0))
+                       (function linearfun first-trade (advice-index)
+                                 #:color '(200 200 0))
+                       (function polyfun first-trade (advice-index)
+                                 #:color '(0 0 200))))
   (displayln (exact->inexact (/ (- (advice-index) first-trade) 3600)))
 #+end_src
 
 #+RESULTS: plot-first-advice
 :results:
-1542659640
-22.166666666666668
+1542687840
+30.0
 :end:
 Found with pre model filter: threshold 2% of previous trade. And only
 trailing peaks
