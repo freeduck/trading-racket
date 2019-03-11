@@ -106,10 +106,13 @@
   (for/sum ((data-point data))
     (expt (- (vector-ref data-point 1) (fitf (vector-ref data-point 0))) 2)))
 
+(struct linear-coeffiecients (a b))
+(struct quadratic-coefficents linear-coeffiecients (c))
 (struct regression-analysis (polyfun
                              linearfun
                              linear-slope
-                             coefficient-1st-exponent))
+                             coefficient-1st-exponent
+                             qv))
 
 (define (find-peak rows)
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
@@ -118,7 +121,7 @@
   (define pes (squared-error pfit rows))
   (if (< les pes)
       #f
-      (regression-analysis pfit lfit a (vector-ref v 1))))
+      (regression-analysis pfit lfit a (vector-ref v 1) v)))
 ;; (module+ test
 ;;   (require db)
 ;;   (require "data.rkt")
