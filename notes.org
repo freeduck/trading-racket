@@ -34,9 +34,14 @@ tests are in ./test.rkt also testing plot
            crypto-trading/fit)
   (define rows (test-data-source first-trade second-trade-target))
   (define plotables (list (lines rows)
-                          (function (make-fitf rows))))
+                          (function (let-values ([(qv pfit) (make-fitf rows)])
+                                      pfit))))
   (plot-on-frame plotables)
 #+end_src
+
+#+RESULTS: plot-first-peak-target
+:results:
+:end:
 
 #+RESULTS:
 :results:
@@ -103,11 +108,16 @@ makes a better fit.
 
   (define rows (test-data-source first-trade (+ 600 first-trade)))
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
-  (define pfit (make-fitf rows))
+  (define-values (v pfit) (make-fitf rows))
   (define les (squared-error lfit rows))
   (define pes (squared-error pfit rows))
   (list les pes)
 #+end_src
+
+#+RESULTS: test-regression-explicit-squared-error
+:results:
+'(0.002749090908243732 66.56590468749998)
+:end:
 
 #+RESULTS:
 :results:
