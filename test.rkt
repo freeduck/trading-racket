@@ -38,7 +38,7 @@
                                                (lambda (a)
                                                  (trade-report current a))]
       [else #f])))
-
+;; Returning trade-report not advice, this is confusing
 (define (find-first-advice time-series [step 600])
   (define time-index 0)
   (define start (vector-ref (first time-series) time-index))

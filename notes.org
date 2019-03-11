@@ -298,6 +298,4 @@ Diff
 #(-68827289515.43556 89.23627567761474 -2.892425716572949e-08)
 #(-46450503479.14099 60.224184303559184 -1.9520522369660206e-08)
 :end:
-
-** TODO get advice with filters
-(get-advice data-source :pre-regression-test ((lambda (data-set)(let ([treshold (* 0.002 (first data-set))])
+** TODO test that peak lies before now
