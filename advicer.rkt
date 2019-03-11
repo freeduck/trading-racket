@@ -18,28 +18,21 @@
          [get-slope regression-analysis-linear-slope]
          [get-coeff regression-analysis-coefficient-1st-exponent]
          [eval-analysis (lambda (analysis)
-                        (let* ([coeff (get-coeff analysis)]
-                               [slope (get-slope analysis)]
-                               [polyfun (regression-analysis-polyfun analysis)]
-                               [linearfun (regression-analysis-linearfun analysis)]
-                               [advice (if (< (regression-analysis-xmom analysis)
-                                              (vector-ref last-data-point 0))
-                                           (cond [(and (> slope 0)
-                                                       (> coeff 0))
-                                                  'sell]
-                                                 [(and (< slope 0)
-                                                       (< coeff 0))
-                                                  'buy]
-                                                 [else #f])
-                                           #f)])
-                          (if advice
-                              (let* ([poly-prediction (polyfun (vector-ref last-data-point 0))]
-                                    [linear-prediction (linearfun (vector-ref last-data-point 0))]
-                                    [prediction-diff (abs (- poly-prediction linear-prediction))])
-                                (if (> prediction-diff 0.5)
-                                    (trade-advice advice analysis)
-                                    #f))
-                              #f)))]
+                          (let* ([coeff (get-coeff analysis)]
+                                 [slope (get-slope analysis)]
+                                 [advice (if (< (regression-analysis-xmom analysis)
+                                                (vector-ref last-data-point 0))
+                                             (cond [(and (> slope 0)
+                                                         (> coeff 0))
+                                                    'sell]
+                                                   [(and (< slope 0)
+                                                         (< coeff 0))
+                                                    'buy]
+                                                   [else #f])
+                                             #f)])
+                            (if advice
+                                (trade-advice advice analysis)
+                                #f)))]
          [wait (lambda () 'wait)])
     (if (< prize-delta threshold)
         #f
