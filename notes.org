@@ -221,6 +221,8 @@ Find first peak using find-peak as filter when scanning
   (define advice-index (find-first-advice (test-data-source first-trade second-trade-target)))
   (define advice (trade-report-analysis advice-index))
   (define analysis (trade-advice-analysis advice))
+  (define time-series (regression-analysis-time-series analysis))
+  (define last-in-time-series (vector-ref (last time-series) 0))
   (define polyfun (regression-analysis-polyfun analysis))
   (define linearfun (regression-analysis-linearfun analysis))
   (displayln (advice-index))
@@ -308,5 +310,57 @@ Diff
 #(-68827289515.43556 89.23627567761474 -2.892425716572949e-08)
 #(-46450503479.14099 60.224184303559184 -1.9520522369660206e-08)
 :end:
-** TODO test that peak lies before now
-x for max on top -b/(2a)
+** Second target
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test)
+  (require crypto-trading/plot)
+  (define-values (advice last-x)
+    (next-advice test-data-source 1542729840))
+  (define analysis (trade-advice-analysis advice))
+  (define time-series (regression-analysis-time-series analysis))
+  (define last-in-time-series (vector-ref (last time-series) 0))
+  (displayln last-in-time-series)
+  (displayln last-x)
+  (displayln "Delta x")
+  (displayln (- last-x last-in-time-series))
+  (displayln "Delta find")
+  (displayln (- last-in-time-series 1542729840))
+  (displayln (advice))
+  (displayln "window size")
+  (displayln (exact->inexact (/ (- last-in-time-series 1542729840) 3600)))
+  (plot-on-frame (list (lines (test-data-source first-trade (+ (* 20 3600) second-trade-target)))
+                       (lines time-series
+                              #:color '(200 200 0))
+                       (function (regression-analysis-polyfun analysis)
+                                 (vector-ref (first time-series) 0)
+                                 (vector-ref (last time-series) 0)
+                                 #:color '(0 0 200))))
+#+end_src
+
+#+RESULTS:
+:results:
+1542741180
+1542741240
+Delta x
+60
+Delta find
+11340
+buy
+window size
+3.15
+:end:
+1542729840
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test)
+  (require crypto-trading/plot)
+  (define-values (advice last-x)
+    (next-advice test-data-source 1542729840))
+  (define analysis (trade-advice-analysis advice))
+  (plot-on-frame (analysis->plotables analysis))
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
