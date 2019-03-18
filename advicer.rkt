@@ -5,7 +5,7 @@
          (struct-out trade-advice)
          (all-from-out crypto-trading/fit))
 
-(struct trade-advice (advice analysis time-series)
+(struct trade-advice (advice analysis)
   #:property prop:procedure (lambda (self)
                               (trade-advice-advice self)))
 
@@ -31,7 +31,7 @@
                                                    [else #f])
                                              #f)])
                             (if advice
-                                (trade-advice advice analysis time-series)
+                                (trade-advice advice analysis)
                                 #f)))]
          [wait (lambda () 'wait)])
     (if (< prize-delta threshold)

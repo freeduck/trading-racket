@@ -239,9 +239,9 @@ Find first peak using find-peak as filter when scanning
 
 #+RESULTS: plot-first-advice
 :results:
-1542727440
-41.0
-1542727440
+1542729840
+41.666666666666664
+1542729840
 :end:
 Found with pre model filter: threshold 2% of previous trade. And only
 trailing peaks
@@ -304,6 +304,13 @@ Diff
   (displayln 2h-vector)
 
 #+end_src
+
+#+RESULTS: fit-vector
+:results:
+#(2361157645.443029 -3.0610199421140973 9.920815046590834e-10)
+#(-68827289515.43556 89.23627567761474 -2.892425716572949e-08)
+#(-46450503479.14099 60.224184303559184 -1.9520522369660206e-08)
+:end:
 
 #+RESULTS:
 :results:
