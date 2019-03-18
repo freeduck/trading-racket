@@ -7,7 +7,7 @@
  [[file:2018-11-18-22:21:00-2019-02-18-22:21:00.db]]
 ** COMMENT Test
 tests are in ./test.rkt also testing plot
-
+** First target
 #+name: test-data
 #+begin_src racket :results output drawer :noweb yes
   (require db)
@@ -234,26 +234,26 @@ Find first peak using find-peak as filter when scanning
                        (function polyfun first-trade (advice-index)
                                  #:color '(0 0 200))))
   (displayln (exact->inexact (/ (- (advice-index) first-trade) 3600)))
+  (displayln last-in-time-series)
 #+end_src
 
 #+RESULTS: plot-first-advice
 :results:
-1542729840
-41.666666666666664
+1542727440
+41.0
+1542727440
 :end:
 Found with pre model filter: threshold 2% of previous trade. And only
 trailing peaks
 #+name: plot-first-real-advice
-#+begin_src racket :results output drawer
-  #lang racket
-  (require crypto-trading/test
-           crypto-trading/plot
-           crypto-trading/advicer)
-  (define advice (get-advice (test-data-source first-trade 1542729841)))
+#+header: :var end=1542729841
+#+header: :prologue "#lang racket\n(require crypto-trading/test crypto-trading/plot crypto-trading/advicer)"
+#+begin_src racket :results value drawer
+  (define time-series (test-data-source first-trade end))
+  (define advice (get-advice time-series))
   (define analysis (trade-advice-analysis advice))
   (define polyfun (regression-analysis-polyfun analysis))
   (define linearfun (regression-analysis-linearfun analysis))
-  (define time-series (test-data-source first-trade 1542729841))
   (define last-data-point (last time-series))
   (define poly-prediction (polyfun (vector-ref last-data-point 0)))
   (define linear-prediction (linearfun (vector-ref last-data-point 0)))
@@ -275,6 +275,7 @@ trailing peaks
 :results:
 Diff
 3.570336586679332
+#<void>
 :end:
 
 #+RESULTS:

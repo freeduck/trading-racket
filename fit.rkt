@@ -113,7 +113,8 @@
                              linear-slope
                              coefficient-1st-exponent
                              qv
-                             xmom))
+                             xmom
+                             time-series))
 
 (define (find-peak rows)
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
@@ -126,7 +127,7 @@
                               (* 2 qa)))
   (if (< les pes)
       #f
-      (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max)))
+      (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max rows)))
 ;; (module+ test
 ;;   (require db)
 ;;   (require "data.rkt")

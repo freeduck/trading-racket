@@ -1,8 +1,9 @@
 #lang racket
 (require racket/gui
          mrlib/snip-canvas
-         plot)
-(provide plot-on-frame (all-from-out plot))
+         plot
+         crypto-trading/fit)
+(provide analysis->plotables plot-on-frame (all-from-out plot))
 
 (define (mouse-callback snip event x y)
   (if (and x y)
@@ -28,6 +29,18 @@
                       [make-snip (lambda (width height)
                                    (make-2d-plot-snip width height plotables))]))
   (send toplevel show #t))
+
+(define (analysis->plotables analysis)
+  (let* ([time-series (regression-analysis-time-series analysis)]
+         [first-x (vector-ref (first time-series) 0)]
+         [last-x (vector-ref (last time-series) 0)]
+         [linearfun (regression-analysis-linearfun analysis)]
+         [polyfun (regression-analysis-polyfun analysis)])
+    (list (lines time-series)
+          (function polyfun first-x last-x
+                    #:color '(200 200 0))
+          (function linearfun first-x last-x
+                    #:color '(0 0 200)))))
 
 (module+ test
   (require crypto-trading/test-data

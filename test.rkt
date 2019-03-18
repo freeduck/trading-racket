@@ -4,10 +4,12 @@
          crypto-trading/test-data
          crypto-trading/advicer)
 
-(provide find-first-advice
+(provide next-advice
+         find-first-advice
          find-first-peak
          scan-window
-         (all-from-out crypto-trading/test-data)
+         (all-from-out crypto-trading/test-data
+                       crypto-trading/advicer)
          (struct-out trade-report))
 
 (define latest-trade 1542579840)
@@ -53,6 +55,11 @@
       [(get-advice window) => (lambda (a)
                                 (trade-report window-end a))]
       [else #f])))
+
+(define (next-advice data-source start #:step [step 600] [end (+ step start)][advice #f] )
+  (if advice
+      (values advice (- end step))
+      (next-advice data-source start (+ step end) (get-advice (data-source start end)))))
 
 (module+ test
   ;; (define test-data-source test-data-source)
