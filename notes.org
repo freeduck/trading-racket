@@ -242,6 +242,7 @@ Find first peak using find-peak as filter when scanning
 1542729840
 41.666666666666664
 1542729840
+1542703740
 :end:
 Found with pre model filter: threshold 2% of previous trade. And only
 trailing peaks
@@ -319,6 +320,7 @@ Diff
 #(-46450503479.14099 60.224184303559184 -1.9520522369660206e-08)
 :end:
 ** Second target
+x for lowest value in first window: 1542703740
 #+begin_src racket :results output drawer
   #lang racket
   (require crypto-trading/test)
@@ -359,16 +361,85 @@ window size
 3.15
 :end:
 1542729840
+#+name: start-at-previous-peak
 #+begin_src racket :results output drawer
   #lang racket
   (require crypto-trading/test)
   (require crypto-trading/plot)
+  (define latest-trade 1542729840)
+  (define peak 1542703740)
   (define-values (advice last-x)
-    (next-advice test-data-source 1542729840))
+    (next-advice test-data-source 1542703740 #:initial-step (- 1542729840
+                                                               1542703740)))
   (define analysis (trade-advice-analysis advice))
-  (plot-on-frame (analysis->plotables analysis))
+  (plot-on-frame (reverse (append (reverse (analysis->plotables analysis))
+                                  (list (lines (test-data-source
+                                                first-trade
+                                                second-trade-target))))))
 #+end_src
 
 #+RESULTS:
 :results:
 :end:
+1542729840
+1542703740
+#+begin_src racket :results output
+  #lang racket
+  (require crypto-trading/test)
+  (require crypto-trading/plot)
+  (define-values (plotables final-start-x)
+    (for/fold ([plotables '()]
+               [start first-trade])
+              ([x (in-range 5)])
+      (let*-values ([(advice last-x)
+                     (next-advice test-data-source start)]
+                    [(analysis)
+                     (trade-advice-analysis advice)])
+        (begin
+          (displayln (abs (regression-analysis-linear-slope analysis)))
+          (displayln (> (abs (regression-analysis-linear-slope analysis)) 9e-05))
+          (displayln (vector-ref (last (regression-analysis-time-series analysis)) 0))
+          (values (append plotables
+                          (analysis->plotables analysis))
+                  last-x)))))
+  (plot-new-window? #t)
+  (plot (append (list (lines (test-data-source first-trade (+ first-trade 497880))
+                             #:color '(0 200 200)))
+                plotables))
+  ;; (plot-on-frame plotables)
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+0.00014133095856279265
+#t
+1542730380
+0.00047856021022739615
+#t
+1542741180
+0.0006795693048918393
+#t
+1542747780
+0.0015272896172251575
+#t
+1542749580
+5.269375658085316e-05
+#f
+1542831780
+#+end_example
+** TODO select large chunk of data                            :speed:of:test:
+** TODO Color code graphs
+** TODO remove from beginning
+
+#+header: :prologue "#lang racket\n(require crypto-trading/test)"
+#+begin_src racket :results value
+  (- 1542828780 first-trade)
+  (* 2 248940)
+#+end_src
+
+#+RESULTS:
+: 497880
+** Large data set
+#+begin_src racket
+#+end_src

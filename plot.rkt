@@ -22,7 +22,7 @@
 
 
 
-(define (plot-on-frame plotables)
+(define (plot-on-frame plotables [snip-factory make-2d-plot-snip])
   (define toplevel (new frame% [label "Plot"] [width 500] [height 500]))
   (define canvas (new snip-canvas%
                       [parent toplevel]

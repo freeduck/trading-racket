@@ -56,7 +56,14 @@
                                 (trade-report window-end a))]
       [else #f])))
 
-(define (next-advice data-source start #:step [step 600] [end (+ step start)][advice #f] )
+(define (next-advice data-source start
+                     #:initial-step [initial-step #f]
+                     #:step [step 600]
+                     [end (let ([end (+ step start)])
+                            (if initial-step
+                                (+ initial-step end)
+                                end))]
+                     [advice #f] )
   (if advice
       (values advice (- end step))
       (next-advice data-source start (+ step end) (get-advice (data-source start end)))))
