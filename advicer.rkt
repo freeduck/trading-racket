@@ -25,7 +25,6 @@
                                  [slope (get-slope analysis)]
                                  [advice (if (and (< (regression-analysis-xmom analysis)
                                                      (vector-ref last-data-point 0)) ; extream within window
-                                                  (> prize-delta threshold)
                                                   (> (abs (regression-analysis-linear-slope analysis)) 5e-05) ; Too flat
                                                   ;; (< 14400 (- last-x first-x)) ; if window bigger than three hours maby start chipping of from the beginning
                                                   #t)
@@ -41,5 +40,7 @@
                                 (trade-advice advice analysis)
                                 #f)))]
          [wait (lambda () 'wait)])
-    (cond [(find-peak time-series) => eval-analysis]
-          [else #f])))
+    (if (< prize-delta threshold)
+        #f
+        (cond [(find-peak time-series) => eval-analysis]
+              [else #f]))))
