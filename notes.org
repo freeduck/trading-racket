@@ -221,7 +221,7 @@ Find first peak using find-peak as filter when scanning
   (define advice-index (find-first-advice (test-data-source first-trade second-trade-target)))
   (define advice (trade-report-analysis advice-index))
   (define analysis (trade-advice-analysis advice))
-  (define time-series (regression-analysis-time-series analysis))
+  (define time-series (regression-analysis-window analysis))
   (define last-in-time-series (vector-ref (last time-series) 0))
   (define polyfun (regression-analysis-polyfun analysis))
   (define linearfun (regression-analysis-linearfun analysis))
@@ -328,7 +328,7 @@ x for lowest value in first window: 1542703740
   (define-values (advice last-x)
     (next-advice test-data-source 1542729840))
   (define analysis (trade-advice-analysis advice))
-  (define time-series (regression-analysis-time-series analysis))
+  (define time-series (regression-analysis-window analysis))
   (define last-in-time-series (vector-ref (last time-series) 0))
   (displayln last-in-time-series)
   (displayln last-x)
@@ -390,7 +390,7 @@ window size
   (define-values (plotables final-start-x)
     (for/fold ([plotables '()]
                [start first-trade])
-              ([x (in-range 5)])
+              ([x (in-range 3)])
       (let*-values ([(advice last-x)
                      (next-advice test-data-source start)]
                     [(analysis)
@@ -398,7 +398,7 @@ window size
         (begin
           (displayln (abs (regression-analysis-linear-slope analysis)))
           (displayln (> (abs (regression-analysis-linear-slope analysis)) 9e-05))
-          (displayln (vector-ref (last (regression-analysis-time-series analysis)) 0))
+          (displayln (vector-ref (last (regression-analysis-window analysis)) 0))
           (values (append plotables
                           (analysis->plotables analysis))
                   last-x)))))
@@ -411,23 +411,15 @@ window size
 #+end_src
 
 #+RESULTS:
-#+begin_example
-0.00014133095856279265
-#t
-1542730380
-0.00047856021022739615
-#t
-1542741180
-0.0006795693048918393
-#t
-1542747780
-0.0015272896172251575
-#t
-1542749580
-5.269375658085316e-05
-#f
-1542831780
-#+end_example
+: 0.00014133095856279265
+: #t
+: 1542730380
+: 0.00047856021022739615
+: #t
+: 1542741180
+: 0.0006795693048918393
+: #t
+: 1542747780
 ** TODO select large chunk of data                            :speed:of:test:
 ** TODO Color code graphs
 ** TODO remove from beginning
