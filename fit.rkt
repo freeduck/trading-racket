@@ -114,7 +114,7 @@
                              coefficient-1st-exponent
                              qv
                              xmom
-                             time-series))
+                             window))
 
 (define (find-peak rows)
   (define-values (a b lfit) (linear-regression (map vector->list rows)))

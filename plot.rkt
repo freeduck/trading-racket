@@ -31,7 +31,7 @@
   (send toplevel show #t))
 
 (define (analysis->plotables analysis)
-  (let* ([time-series (regression-analysis-time-series analysis)]
+  (let* ([time-series (regression-analysis-window analysis)]
          [first-x (vector-ref (first time-series) 0)]
          [last-x (vector-ref (last time-series) 0)]
          [linearfun (regression-analysis-linearfun analysis)]
