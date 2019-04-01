@@ -1,0 +1,23 @@
+#lang racket
+(require crypto-trading/advicer
+         crypto-trading/test
+         crypto-trading/plot)
+(provide plot-first-advice)
+(define (plot-first-advice)
+  (define advice-index (find-first-advice (test-data-source first-trade (* 2 second-trade-target))))
+  (define advice (trade-report-analysis advice-index))
+  (define analysis (trade-advice-analysis advice))
+  (define time-series (regression-analysis-window analysis))
+  (define last-in-time-series (vector-ref (last time-series) 0))
+  (define polyfun (regression-analysis-polyfun analysis))
+  (define linearfun (regression-analysis-linearfun analysis))
+  (displayln (advice-index))
+  (plot-on-frame (list (lines (test-data-source first-trade second-trade-target))
+                       (lines (test-data-source first-trade (advice-index))
+                              #:color '(0 200 0))
+                       (function linearfun first-trade (advice-index)
+                                 #:color '(200 200 0))
+                       (function polyfun first-trade (advice-index)
+                                 #:color '(0 0 200))))
+  (displayln (exact->inexact (/ (- (advice-index) first-trade) 3600)))
+  (displayln last-in-time-series))
