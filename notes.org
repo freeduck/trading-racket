@@ -239,10 +239,15 @@ Find first peak using find-peak as filter when scanning
 
 #+RESULTS: plot-first-advice
 :results:
-1542729840
-41.666666666666664
-1542729840
-1542703740
+trade-report-analysis: contract violation
+  expected: trade-report?
+  given: #f
+  context...:
+   "/tmp/babel-5111QS-/org-babel-5111O5Z.rkt": [running body]
+   temp37_0
+   for-loop
+   run-module-instance!125
+   perform-require!78
 :end:
 Found with pre model filter: threshold 2% of previous trade. And only
 trailing peaks
@@ -390,7 +395,7 @@ window size
   (define-values (plotables final-start-x)
     (for/fold ([plotables '()]
                [start first-trade])
-              ([x (in-range 3)])
+              ([x (in-range 5)])
       (let*-values ([(advice last-x)
                      (next-advice test-data-source start)]
                     [(analysis)
@@ -411,15 +416,23 @@ window size
 #+end_src
 
 #+RESULTS:
-: 0.00014133095856279265
-: #t
-: 1542730380
-: 0.00047856021022739615
-: #t
-: 1542741180
-: 0.0006795693048918393
-: #t
-: 1542747780
+#+begin_example
+0.00014133095856279265
+#t
+1542730380
+0.00047856021022739615
+#t
+1542741180
+0.0006795693048918393
+#t
+1542747780
+0.0015272896172251575
+#t
+1542749580
+5.269375658085316e-05
+#f
+1542831780
+#+end_example
 ** TODO select large chunk of data                            :speed:of:test:
 ** TODO Color code graphs
 ** TODO remove from beginning
@@ -433,5 +446,40 @@ window size
 #+RESULTS:
 : 497880
 ** Large data set
-#+begin_src racket
+#+begin_src racket :results output drawer
+  #lang racket
+  (require crypto-trading/test)
+  (require crypto-trading/plot)
+  (define time-series (test-data-source first-trade (+ first-trade 497880)))
+  (define advice (find-advice time-series))
+  (define analysis (trade-advice-analysis advice))
+  (define plotables (for/fold ([plotables '()])
+                              ([x (in-range 2)])))
+  (plot-new-window? #t)
+  (plot (analysis->plotables analysis))
 #+end_src
+
+#+RESULTS:
+:results:
+/tmp/babel-7397x6K/org-babel-7397Tnc.rkt:7:18: for/fold: missing body expression after sequence bindings
+  in: (for/fold ((plotables (quote ()))) ((x (in-range 2))))
+  location...:
+   /tmp/babel-7397x6K/org-babel-7397Tnc.rkt:7:18
+  context...:
+   do-raise-syntax-error
+   apply-transformer-in-context
+   apply-transformer52
+   dispatch-transformer41
+   loop
+   [repeats 6 more times]
+   module-begin-k
+   expand-module16
+   expand-capturing-lifts
+   expand-single
+   temp74_0
+   compile16
+   temp68_0
+   standard-module-name-resolver
+   module-path-index-resolve
+   [repeats 1 more time]
+:end:

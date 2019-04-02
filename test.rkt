@@ -4,7 +4,8 @@
          crypto-trading/test-data
          crypto-trading/advicer)
 
-(provide next-advice
+(provide find-advice
+         next-advice
          find-first-advice
          find-first-peak
          scan-window
@@ -67,6 +68,14 @@
   (if advice
       (values advice (- end step))
       (next-advice data-source start (+ step end) (get-advice (data-source start end)))))
+
+(define (find-advice time-series #:step [step 600] [window-size step] [advice #f])
+  (if advice
+      advice
+      (find-advice time-series
+                   #:step step
+                   (+ step window-size)
+                   (get-advice (take time-series window-size)))))
 
 (module+ test
   ;; (define test-data-source test-data-source)
