@@ -21,3 +21,24 @@
                                  #:color '(0 0 200))))
   (displayln (exact->inexact (/ (- (advice-index) first-trade) 3600)))
   (displayln last-in-time-series))
+
+(define (find-#-of-peaks x)
+  (define-values (plotables final-start-x)
+    (for/fold ([plotables '()]
+               [start first-trade])
+              ([x (in-range x)])
+      (let*-values ([(advice last-x)
+                     (next-advice test-data-source start)]
+                    [(analysis)
+                     (trade-advice-analysis advice)])
+        (begin
+          (displayln (abs (regression-analysis-linear-slope analysis)))
+          (displayln (> (abs (regression-analysis-linear-slope analysis)) 9e-05))
+          (displayln (vector-ref (last (regression-analysis-window analysis)) 0))
+          (values (append plotables
+                          (analysis->plotables analysis))
+                  last-x)))))
+  (plot-new-window? #t)
+  (plot (append (list (lines (test-data-source first-trade (+ first-trade 497880))
+                             #:color '(0 200 200)))
+                plotables)))
