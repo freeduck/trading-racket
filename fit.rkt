@@ -132,10 +132,10 @@
   (define qa (vector-ref v 2))
   (let* ([qb (vector-ref v 1)]
          [x-for-min-or-max (find-min-or-max qb qa)])
-    (if (or (< les pes)
+    (if (and (> les pes)
             x-for-min-or-max)
-        #f
-        (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max rows))))
+        (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max rows)
+        #f)))
 ;; (module+ test
 ;;   (require db)
 ;;   (require "data.rkt")
