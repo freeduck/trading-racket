@@ -31,9 +31,9 @@
                      (next-advice test-data-source start)]
                     [(analysis)
                      (trade-advice-analysis advice)])
-        (begin
-          (displayln (abs (regression-analysis-linear-slope analysis)))
-          (displayln (> (abs (regression-analysis-linear-slope analysis)) 9e-05))
+        (let ([slope (regression-analysis-linear-slope analysis)])
+          (displayln (abs slope))
+          (displayln (> (abs slope) 9e-05))
           (displayln (vector-ref (last (regression-analysis-window analysis)) 0))
           (values (append plotables
                           (analysis->plotables analysis))
