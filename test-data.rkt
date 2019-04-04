@@ -9,5 +9,6 @@
 (define test-data-source (select-window *db*))
 
 (define first-trade 1542579840) ; found by hand
+(define noise-start 1542831780)
 ;; The second trade should be around here
 (define second-trade-target (+ 1542579840 (* 3600 42)))
