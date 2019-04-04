@@ -38,7 +38,10 @@
           (values (append plotables
                           (analysis->plotables analysis))
                   last-x)))))
-  (plot-new-window? #t)
-  (plot (append (list (lines (test-data-source first-trade (+ first-trade 497880))
-                             #:color '(0 200 200)))
-                plotables)))
+  plotables)
+
+(define (plot-#-of-frames x)
+  ((plot-new-window? #t)
+   (plot (append (list (lines (test-data-source first-trade (+ first-trade 497880))
+                              #:color '(0 200 200)))
+                 (find-#-of-peaks x)))))
