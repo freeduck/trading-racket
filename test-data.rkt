@@ -10,5 +10,7 @@
 
 (define first-trade 1542579840) ; found by hand
 (define noise-start 1542831780)
+(define aprox-noise-end 1542927156)
+(define aprox-peak-after-noise 1542956099)
 ;; The second trade should be around here
 (define second-trade-target (+ 1542579840 (* 3600 42)))
