@@ -59,6 +59,24 @@
                   last-x)))))
   plotables)
 
+(define (find-#-of-peaks-from-start x start)
+  (define-values (plotables final-start-x)
+    (for/fold ([plotables '()]
+               [start start])
+              ([x (in-range x)])
+      (let*-values ([(advice last-x)
+                     (next-advice test-data-source start)]
+                    [(analysis)
+                     (trade-advice-analysis advice)])
+        (let ([slope (regression-analysis-linear-slope analysis)])
+          (displayln (abs slope))
+          (displayln (> (abs slope) 9e-05))
+          (displayln (vector-ref (last (regression-analysis-window analysis)) 0))
+          (values (append plotables
+                          (analysis->plotables analysis))
+                  last-x)))))
+  plotables)
+
 (define (plot-#-of-peaks x)
   ((plot-new-window? #t)
    (plot (append (list (lines (test-data-source first-trade (+ first-trade 497880))

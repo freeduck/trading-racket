@@ -1,7 +1,10 @@
 #lang racket
 (require db
          crypto-trading/data)
-(provide test-data-source first-trade second-trade-target)
+(provide aprox-peak-after-noise
+         noise-start
+         aprox-noise-end
+         test-data-source first-trade second-trade-target)
 (define *db*
   (sqlite3-connect #:database
                    "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
