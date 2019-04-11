@@ -1,7 +1,8 @@
 #lang racket
 (require crypto-trading/advicer
          crypto-trading/test
-         crypto-trading/plot)
+         crypto-trading/plot
+         math)
 (provide plot-first-advice)
 (define (plot-first-advice)
   (define advice-index (find-first-advice (test-data-source first-trade (* 2 second-trade-target))))
@@ -88,3 +89,7 @@
    (plot-on-frame (append (list (lines (test-data-source first-trade (+ first-trade 497880))
                                        #:color '(0 200 200)))
                           (find-#-of-peaks x)))))
+
+(define (remove-noise-fft (start noise-start) (end aprox-noise-end))
+  (let* ([data-set (test-data-source start end)])
+    (list->vector (map inexact->exact (second (transpose data-set))))))
