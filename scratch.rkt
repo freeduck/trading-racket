@@ -96,16 +96,13 @@
 
 (define (reverse-data-find-peak)
   (let* ([data-set (test-data-source noise-start aprox-peak-after-noise)]
-         [transposed (transpose data-set)]
-         [y-reversed (reverse (second transposed))]
-         ;; list transpose
-         [flipped (apply map vector (list (first transposed) y-reversed ))]
-         [advice-index (find-first-advice flipped)]
+         [advice-index (find-first-advice (flip data-set))]
+         [analysis (trade-report-analysis advice-index)]
          [xmom (compose1
                 regression-analysis-xmom
                 trade-advice-analysis
                 trade-report-analysis)])
     (plot-new-window? #t)
     (plot (lines data-set))
-    (plot (lines flipped))
+    (plot (analysis->plotables analysis))
     (xmom advice-index)))

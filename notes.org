@@ -485,3 +485,5 @@ window size
 :end:
 ** TODO Reverse data
    transpose -> reverse x -> transpose
+** TODO trade-report-analysis return trade-advice                       :bug:
+   from find-first-advice

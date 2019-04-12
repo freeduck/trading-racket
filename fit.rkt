@@ -1,7 +1,7 @@
 #lang racket
 (require math plot)
 
-(provide find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at
+(provide flip find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at
          (struct-out regression-analysis))
 
 (define xs '(0 1  2  3  4  5   6   7   8   9  10))
@@ -37,6 +37,12 @@
 
 (define (transpose data)
   (vector->list (apply vector-map list data)))
+
+(define (flip data-set)
+  (let* ([transposed (transpose data-set)]
+         [y-reversed (reverse (second transposed))])
+    ;; list transpose
+    (apply map vector (list (first transposed) y-reversed ))))
 
 (define (fit-data data [n 2])
   (apply fit
