@@ -97,12 +97,12 @@
 (define (reverse-data-find-peak)
   (let* ([data-set (test-data-source noise-start aprox-peak-after-noise)]
          [advice-index (find-first-advice (flip data-set))]
-         [analysis (trade-report-analysis advice-index)]
+         [analysis (trade-advice-analysis (trade-report-analysis advice-index))]
          [xmom (compose1
                 regression-analysis-xmom
                 trade-advice-analysis
                 trade-report-analysis)])
     (plot-new-window? #t)
     (plot (lines data-set))
-    (plot (analysis->plotables analysis))
+    (plot-on-frame (analysis->plotables analysis))
     (xmom advice-index)))
