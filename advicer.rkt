@@ -8,7 +8,9 @@
 (struct trade-advice (advice analysis)
   #:property prop:procedure (lambda (self)
                               (trade-advice-advice self)))
-
+(define (extream-within-window analysis last-data-point)
+  (< (regression-analysis-xmom analysis)
+     (vector-ref last-data-point 0)))
 (define (peak-at-end slope coeff)
   (cond [(and (> slope 0)
               (> coeff 0))
@@ -32,8 +34,7 @@
          [eval-analysis (lambda (analysis)
                           (let* ([coeff (get-coeff analysis)]
                                  [slope (get-slope analysis)]
-                                 [advice (if (and (< (regression-analysis-xmom analysis)
-                                                     (vector-ref last-data-point 0)) ; extream within window
+                                 [advice (if (and (extream-within-window analysis last-data-point) ; extream within window
                                                   (> (abs (regression-analysis-linear-slope analysis)) 5e-05) ; Too flat
                                                   ;; (< 14400 (- last-x first-x)) ; if window bigger than three hours maby start chipping of from the beginning
                                                   #t)
