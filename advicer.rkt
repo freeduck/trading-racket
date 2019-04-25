@@ -9,6 +9,15 @@
   #:property prop:procedure (lambda (self)
                               (trade-advice-advice self)))
 
+(define (peak-at-end slope coeff)
+  (cond [(and (> slope 0)
+              (> coeff 0))
+         'sell]
+        [(and (< slope 0)
+              (< coeff 0))
+         'buy]
+        [else #f]))
+
 (define (get-advice time-series)
   (let* ([prize-last-trade (vector-ref (first time-series) 1)]
          [threshold (* 0.02 prize-last-trade)]
@@ -28,13 +37,7 @@
                                                   (> (abs (regression-analysis-linear-slope analysis)) 5e-05) ; Too flat
                                                   ;; (< 14400 (- last-x first-x)) ; if window bigger than three hours maby start chipping of from the beginning
                                                   #t)
-                                             (cond [(and (> slope 0)
-                                                         (> coeff 0))
-                                                    'sell]
-                                                   [(and (< slope 0)
-                                                         (< coeff 0))
-                                                    'buy]
-                                                   [else #f])
+                                             (peak-at-end slope coeff)
                                              #f)])
                             (if advice
                                 (trade-advice advice analysis)
