@@ -90,9 +90,15 @@
                                        #:color '(0 200 200)))
                           (find-#-of-peaks x)))))
 
+(define (strip-to-power-of-two l)
+  (if (power-of-two? (length l))
+      l
+      (strip-to-power-of-two (cdr l))))
+
 (define (remove-noise-fft (start noise-start) (end aprox-noise-end))
   (let* ([data-set (test-data-source start end)])
-    (list->vector (map inexact->exact (second (transpose data-set))))))
+    (array-fft (list->array (strip-to-power-of-two (second (transpose data-set)))))))
+
 
 (define (reverse-data-find-peak)
   (let* ([data-set (test-data-source noise-start aprox-peak-after-noise)]
