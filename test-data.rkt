@@ -15,5 +15,8 @@
 (define noise-start 1542831780)
 (define aprox-noise-end 1542927156)
 (define aprox-peak-after-noise 1542956099)
+(define highest-magnitude-noise 60712.17+0.0i)
+(define highest-magnitude-after-noise 14142.84+0.0i)
+(define highest-magnitude-full-set 120091.11+0.0i)
 ;; The second trade should be around here
 (define second-trade-target (+ 1542579840 (* 3600 42)))
