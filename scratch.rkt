@@ -2,7 +2,7 @@
 (require crypto-trading/advicer
          crypto-trading/test
          crypto-trading/plot
-         math)
+         crypto-trading/math)
 (provide plot-first-advice)
 (define (plot-first-advice)
   (define advice-index (find-first-advice (test-data-source first-trade (* 2 second-trade-target))))
@@ -90,19 +90,8 @@
                                        #:color '(0 200 200)))
                           (find-#-of-peaks x)))))
 
-(define (strip-to-power-of-two l)
-  (if (power-of-two? (length l))
-      l
-      (strip-to-power-of-two (cdr l))))
-
-(define (complex-sort-by-magnitude a b)
-  (let ((magnitude-a (sqrt (+ (expt (real-part a) 2)
-                              (expt (imag-part a) 2))))
-        (magnitude-b (sqrt (+ (expt (real-part b) 2)
-                              (expt (imag-part b) 2)))))
-    (> magnitude-a magnitude-b)))
-
-(define (remove-noise-fft (start noise-start) (end aprox-peak-after-noise))
+(define (remove-noise-fft (start noise-start)
+                          (end aprox-peak-after-noise))
   (let* ([data-set (test-data-source start end)])
     (array-fft (list->array (strip-to-power-of-two (second (transpose data-set)))))))
 
