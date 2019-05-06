@@ -5,7 +5,8 @@
                "http"
                "yaml"
                "sha"
-               "crypto-lib"))
+               "crypto-lib"
+               "rsound"))
 (define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/crypto-trading.scrbl" ())))
 (define pkg-desc "Description Here")
