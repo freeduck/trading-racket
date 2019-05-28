@@ -364,6 +364,7 @@ Delta find
 buy
 window size
 3.15
+1542729807
 :end:
 1542729840
 #+name: start-at-previous-peak
@@ -488,7 +489,7 @@ window size
 ** TODO trade-report-analysis return trade-advice                       :bug:
    from find-first-advice
 ** Scheme
-#+begin_src scheme
+#+begin_src scheme output drawer
   #lang racket
   (require crypto-trading/advicer
 	   crypto-trading/test
@@ -522,4 +523,16 @@ window size
 #+end_src
 
 #+RESULTS:
+#+begin_src scheme output drawer
+  #lang racket
+  (require crypto-trading/advicer
+	   crypto-trading/test
+	   crypto-trading/plot
+	   crypto-trading/math)
+  (test-data-source noise-start aprox-peak-after-noise)
 
+#+end_src
+
+
+
+** reverse is done in [[./scratch.rkt]]
