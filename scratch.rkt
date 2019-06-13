@@ -93,7 +93,7 @@
 (define (remove-noise-fft (start noise-start)
                           (end aprox-peak-after-noise))
   (let* ([data-set (test-data-source start end)])
-    (array-fft (list->array (strip-to-power-of-two (second (transpose data-set)))))))
+    (fft data-set)))
 
 
 (define (reverse-data-find-peak)

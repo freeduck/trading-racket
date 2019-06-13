@@ -1,7 +1,9 @@
 #lang racket
 (require
+ crypto-trading/fit
  math)
-(provide strip-to-power-of-two
+(provide fft
+         strip-to-power-of-two
          complex-sort-by-magnitude
          (all-from-out math))
 
@@ -16,3 +18,6 @@
         (magnitude-b (sqrt (+ (expt (real-part b) 2)
                               (expt (imag-part b) 2)))))
     (> magnitude-a magnitude-b)))
+
+(define (fft data-set)
+  (array-fft (list->array (strip-to-power-of-two (second (transpose data-set))))))
