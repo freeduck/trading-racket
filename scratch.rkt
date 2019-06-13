@@ -92,8 +92,10 @@
 
 (define (remove-noise-fft (start noise-start)
                           (end aprox-peak-after-noise))
-  (let* ([data-set (test-data-source start end)])
-    (fft data-set)))
+  (let*-values ([(data-set) (test-data-source start end)]
+                [(freq-sample) (* 60 24)]
+                [(ft sample) (fft data-set)])
+    ft))
 
 
 (define (reverse-data-find-peak)

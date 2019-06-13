@@ -20,4 +20,5 @@
     (> magnitude-a magnitude-b)))
 
 (define (fft data-set)
-  (array-fft (list->array (strip-to-power-of-two (second (transpose data-set))))))
+  (let* ([sample (strip-to-power-of-two (second (transpose data-set)))])
+    (values (array-fft (list->array sample)) sample)))
