@@ -4,7 +4,8 @@
 (provide aprox-peak-after-noise
          noise-start
          aprox-noise-end
-         test-data-source first-trade second-trade-target)
+         test-data-source first-trade second-trade-target
+         (all-from-out crypto-trading/data))
 (define *db*
   (sqlite3-connect #:database
                    "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
@@ -20,3 +21,8 @@
 (define highest-magnitude-full-set 120091.11+0.0i)
 ;; The second trade should be around here
 (define second-trade-target (+ 1542579840 (* 3600 42)))
+
+
+(define (get-noise-data-set (start noise-start)
+                            #:end (end aprox-peak-after-noise))
+  (test-data-source start end))

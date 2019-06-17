@@ -1,5 +1,7 @@
 #lang racket
-(require math plot)
+(require
+ crypto-trading/math
+ plot)
 
 (provide flip find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at
          (struct-out regression-analysis))
@@ -34,9 +36,6 @@
 (define (extract data)
   (values (map (lambda (v)(vector-ref v 0)) data)
           (map (lambda (v)(vector-ref v 1)) data)))
-
-(define (transpose data)
-  (vector->list (apply vector-map list data)))
 
 (define (flip data-set)
   (let* ([transposed (transpose data-set)]
