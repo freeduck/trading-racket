@@ -1,7 +1,7 @@
 #lang racket
 (require crypto-trading/test
          crypto-trading/plot
-         math)
+         crypto-trading/math)
 (provide plot-first-advice)
 (define (plot-first-advice)
   (define advice-index (find-first-advice (test-data-source first-trade (* 2 second-trade-target))))
@@ -89,18 +89,11 @@
                                        #:color '(0 200 200)))
                           (find-#-of-peaks x)))))
 
-(define (remove-noise-fft (start first-trade)
-                          (end (+ start 95376)))
+(define (remove-noise-fft (start noise-start)
+                          (end aprox-noise-end))
   (let* ([data-set (test-data-source start end)]
-         [fft-sample (create-fft-sample data-set)]
-         [freq-sample (* 60 24)] ;
-         [ft (array->list (array-fft fft-sample))]
-         [fft-coefficient (/ freq-sample (length ft))]
-         [freq-mag (for/list ([bin ft]
-                              [i (in-naturals 1)])
-                     (vector(exact->inexact (* fft-coefficient i))
-                            (magnitude bin)))])
-    (plot-on-frame (lines (cdr freq-mag)))))
+         [freq-mag (fft data-set)])
+    (plot-on-frame (lines freq-mag))))
 
 
 (define (reverse-data-find-peak)

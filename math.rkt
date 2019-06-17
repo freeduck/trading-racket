@@ -1,7 +1,9 @@
 #lang racket
 (require
  math)
-(provide transpose
+(provide fft
+         transpose
+         create-fft-sample
          strip-to-power-of-two
          complex-sort-by-magnitude
          (all-from-out math))
@@ -20,3 +22,15 @@
 (define (transpose data)
   (vector->list (apply vector-map list data)))
 
+(define (create-fft-sample data-set)
+  (list->array (strip-to-power-of-two (second (transpose data-set)))))
+
+(define (fft data-set)
+  (let* ([fft-sample (create-fft-sample data-set)]
+         [freq-sample (* 60 24)] ;
+         [ft (array->list (array-fft fft-sample))]
+         [fft-coefficient (/ freq-sample (length ft))])
+    (for/list ([bin ft]
+               [i (in-naturals 1)])
+      (vector(exact->inexact (* fft-coefficient i))
+             (magnitude bin)))))
