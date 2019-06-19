@@ -2,7 +2,8 @@
 (require "fit.rkt"
          "plot.rkt"
          crypto-trading/test-data
-         crypto-trading/advicer)
+         crypto-trading/advicer
+         crypto-trading/math)
 
 (provide find-advice
          next-advice
@@ -76,6 +77,30 @@
                    #:step step
                    (+ step window-size)
                    (get-advice (take time-series window-size)))))
+
+(define (find-peak-with-fft data-set)
+  (for/fold [(peak #f)]
+            [(window-end (in-range 600 (+ 1 (length data-set)) 600))
+             #:break peak]
+    (let* ([freq-mag (fft (take data-set (min window-end (length data-set))))]
+           [_ (displayln (min window-end (length data-set)))]
+           [max-mag (vector-ref (first freq-mag) 1)])
+      (if (> max-mag 100000)
+          window-end
+          #f))))
+
+(define (find-peak-with-fft-sliced data-set)
+  (let-values ([(found_peak
+                 data) (for/fold [(peak #f) (window '())]
+                                 [(slot (in-slice 600 (in-list data-set)))
+                                  #:break peak]
+                         (let* ([data (append window slot)]
+                                [freq-magnitude (fft data)]
+                                [max-mag (vector-ref (first freq-magnitude) 1)])
+                           (values (> max-mag 100000) data)))])
+    (if found_peak
+        data
+        #f)))
 
 (module+ test
   ;; (define test-data-source test-data-source)

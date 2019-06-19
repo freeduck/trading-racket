@@ -90,10 +90,11 @@
                           (find-#-of-peaks x)))))
 
 (define (remove-noise-fft (start noise-start)
-                          (end aprox-noise-end))
+                          (end aprox-peak-after-noise))
   (let* ([data-set (test-data-source start end)]
          [freq-mag (fft data-set)])
-    (plot-on-frame (lines freq-mag))))
+    (plot-new-window? #t)
+    (plot (lines freq-mag))))
 
 
 (define (reverse-data-find-peak)
