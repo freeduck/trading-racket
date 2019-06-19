@@ -88,7 +88,7 @@
       (if (> max-mag 100000)
           window-end
           #f))))
-
+;; good
 (define (find-peak-with-fft-sliced data-set)
   (let-values ([(found_peak
                  data) (for/fold [(peak #f) (window '())]
