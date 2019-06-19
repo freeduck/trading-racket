@@ -1,5 +1,6 @@
 #lang racket
 (require
+ crypto-trading/data-mangling
  math)
 (provide fft
          transpose
@@ -19,8 +20,6 @@
         (magnitude-b (sqrt (+ (expt (real-part b) 2)
                               (expt (imag-part b) 2)))))
     (> magnitude-a magnitude-b)))
-(define (transpose data)
-  (vector->list (apply vector-map list data)))
 
 (define (create-fft-sample data-set)
   (list->array (strip-to-power-of-two (second (transpose data-set)))))
