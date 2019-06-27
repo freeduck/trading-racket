@@ -1,7 +1,8 @@
 #lang racket
 (require crypto-trading/test
          crypto-trading/plot
-         crypto-trading/math)
+         crypto-trading/math
+         "data-mangling.rkt")
 (provide plot-first-advice)
 (define (plot-first-advice)
   (define advice-index (find-first-advice (test-data-source first-trade (* 2 second-trade-target))))
@@ -109,3 +110,6 @@
     (plot (lines data-set))
     (plot-on-frame (analysis->plotables analysis))
     (xmom advice-index)))
+
+
+(define rev-sliced-data (reverse (slice-data (test-data-source noise-start aprox-noise-end))))
