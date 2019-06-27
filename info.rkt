@@ -7,7 +7,8 @@
                "sha"
                "crypto-lib"
                "rsound"
-               "threading"))
+               "threading"
+               "memoize"))
 (define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/crypto-trading.scrbl" ())))
 (define pkg-desc "Description Here")

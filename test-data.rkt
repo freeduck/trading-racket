@@ -1,16 +1,23 @@
 #lang racket
 (require db
-         crypto-trading/data)
+         crypto-trading/data
+         memoize)
 (provide aprox-peak-after-noise
+         data-path
          noise-start
          aprox-noise-end
          test-data-source first-trade second-trade-target
          (all-from-out crypto-trading/data))
-(define *db*
-  (sqlite3-connect #:database
-                   "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
-
-(define test-data-source (select-window *db*))
+(define data-path (make-parameter "."))
+;; (define *db*
+;;   (sqlite3-connect #:database
+;;                    (string-append (data-path) "/2018-11-18-22:21:00-2019-02-18-22:21:00.db")))
+(define *db* (make-parameter "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
+(define/memo (connect-test path)
+  (select-window (sqlite3-connect #:database
+                                  (string-append (data-path) "/" path))))
+(define (test-data-source start end)
+  ((connect-test (*db*)) start end))
 
 (define first-trade 1542579840) ; found by hand
 (define noise-start 1542831780)

@@ -20,11 +20,6 @@ tests are in ./test.rkt also testing plot
 :results:
 :end:
 
-#+name: data-sorce
-#+begin_src racket :results output drawer :noweb yes
-  (require crypto-trading/data)
-  (define test-data-source (select-window *db*))
-#+end_src
 
 #+name: plot-first-peak-target
 #+begin_src racket :results output drawer
