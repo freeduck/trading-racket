@@ -6,12 +6,12 @@
 
 (define (find-peak-in-list data-source)
   (for/fold ([peak #f] [old-data '()])
-            ([bin (in-list data-source)]
+            ([bin (in-list (reverse data-source))]
              #:break peak)
     (let ([data (append bin old-data)])
       (values (find-peak data) data))))
 
 (parameterize ([data-path ".."])
-  (define rev-sliced-data (reverse (slice-data (test-data-source noise-start aprox-peak-after-noise))))
+  (define rev-sliced-data (slice-data (test-data-source noise-start aprox-peak-after-noise)))
   (let-values ([(peak data-series) (find-peak-in-list rev-sliced-data)])
     (plot (lines data-series))))
