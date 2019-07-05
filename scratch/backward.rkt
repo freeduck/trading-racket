@@ -2,16 +2,24 @@
 (require "../fit.rkt"
          "../data-mangling.rkt"
          "../test.rkt"
-         plot)
+         plot
+         threading)
 
 (define (find-peak-in-list data-source)
-  (for/fold ([peak #f] [old-data '()])
-            ([bin (in-list (reverse data-source))]
-             #:break peak)
-    (let ([data (append bin old-data)])
-      (values (find-peak data) data))))
+  (let-values ([(peak data-series) (for/fold ([peak #f] [old-data '()])
+                                             ([bin (in-list (reverse data-source))]
+                                              #:break peak)
+                                     (let ([data (append bin old-data)])
+                                       (values (find-peak data) data)))])
+    peak))
 
+(define find (λ (data)
+               (let-values ([(peak data-series) (find-peak-in-list data)])
+                 data-series)))
 (parameterize ([data-path ".."])
-  (define rev-sliced-data (slice-data (test-data-source noise-start aprox-peak-after-noise)))
-  (let-values ([(peak data-series) (find-peak-in-list rev-sliced-data)])
-    (plot (lines data-series))))
+  (~> (test-data-source noise-start aprox-peak-after-noise)
+      slice-data
+      find-peak-in-list
+      regression-analysis-window
+      lines
+      plot))
