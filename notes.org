@@ -531,3 +531,4 @@ window size
 
 
 ** reverse is done in [[./scratch.rkt]]
+** Focal point parabola
