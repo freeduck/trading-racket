@@ -115,13 +115,15 @@
 
 (struct linear-coeffiecients (a b))
 (struct quadratic-coefficents linear-coeffiecients (c))
-(struct regression-analysis (polyfun
-                             linearfun
-                             linear-slope
-                             coefficient-1st-exponent
-                             qv
-                             xmom
-                             window))
+(struct regression-analysis
+  (polyfun
+   linearfun
+   linear-slope
+   coefficient-1st-exponent
+   qv
+   xmom
+   window)
+  #:property prop:sequence (λ (s) (regression-analysis-window s)))
 
 (define (find-min-or-max b a)
   (with-handlers ([exn:fail:contract:divide-by-zero?
@@ -129,7 +131,7 @@
     (/ (- b)
        (* 2 a))))
 
-(define (find-peak rows)
+(define (find-peak rows #:validate-fn (validate-fn (λ (ra) #t)))
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
   (define-values (v pfit) (make-fitf rows))
   (define les (squared-error lfit rows))
@@ -138,8 +140,9 @@
   (let* ([qb (vector-ref v 1)]
          [x-for-min-or-max (find-min-or-max qb qa)])
     (if (and (> les pes)
-            x-for-min-or-max)
-        (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max rows)
+             x-for-min-or-max
+             )
+        (validate-fn (regression-analysis pfit lfit a (vector-ref v 1) v x-for-min-or-max rows))
         #f)))
 ;; (module+ test
 ;;   (require db)
