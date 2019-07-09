@@ -24,7 +24,7 @@
          [threshold (* 0.02 prize-last-trade)])
     (if (< prize-delta threshold)
         #f
-        time-series)))
+        a-time-series)))
 
 (define (validate-peak peak-analysis)
   (and~> peak-analysis
