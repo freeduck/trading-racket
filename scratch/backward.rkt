@@ -14,7 +14,9 @@
     peak))
 
 (define (within-prize-threshold? a-time-series)
-  (let* ([time-series (stream->list (sequence->stream a-time-series))]
+  (let* ([time-series (if (list? a-time-series)
+                          a-time-series
+                          (sequence->list a-time-series))]
          [prize-last-trade (vector-ref (first time-series) 1)]
          [_ (displayln prize-last-trade)]
          [last-data-point (last time-series)]
