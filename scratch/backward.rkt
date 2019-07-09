@@ -18,10 +18,8 @@
                           a-time-series
                           (sequence->list a-time-series))]
          [prize-last-trade (vector-ref (first time-series) 1)]
-         [_ (displayln prize-last-trade)]
          [last-data-point (last time-series)]
          [current-prize (vector-ref last-data-point 1)]
-         [_ (displayln current-prize)]
          [prize-delta (abs (- current-prize prize-last-trade))]
          [threshold (* 0.02 prize-last-trade)])
     (if (< prize-delta threshold)
