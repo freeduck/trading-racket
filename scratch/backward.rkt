@@ -2,6 +2,7 @@
 (require "../fit.rkt"
          "../data-mangling.rkt"
          "../test.rkt"
+         "../query.rkt"
          plot
          threading)
 
@@ -13,16 +14,16 @@
                                        (values (find-peak data #:validate-fn validate-peak-fn) data)))])
     peak))
 
-(define (within-prize-threshold? a-time-series)
+(define (within-prize-threshold? a-time-series (threshold 0.02))
   (let* ([time-series (if (list? a-time-series)
                           a-time-series
                           (sequence->list a-time-series))]
-         [prize-last-trade (vector-ref (first time-series) 1)]
-         [last-data-point (last time-series)]
-         [current-prize (vector-ref last-data-point 1)]
-         [prize-delta (abs (- current-prize prize-last-trade))]
-         [threshold (* 0.02 prize-last-trade)])
-    (if (< prize-delta threshold)
+         [first-prize (first-prize-in-series time-series)]
+         [last-prize (last-prize-in-series time-series)]
+         [prize-delta (abs (- last-prize first-prize))])
+    (if (> (* threshold
+              first-prize)
+           prize-delta)
         #f
         a-time-series)))
 
