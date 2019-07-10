@@ -131,7 +131,7 @@
     (/ (- b)
        (* 2 a))))
 
-(define (find-peak rows #:validate-fn (validate-fn (λ (ra) #t)))
+(define (find-peak rows #:validate-fn (validate-fn (λ (ra) ra)))
   (define-values (a b lfit) (linear-regression (map vector->list rows)))
   (define-values (v pfit) (make-fitf rows))
   (define les (squared-error lfit rows))

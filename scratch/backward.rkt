@@ -6,12 +6,15 @@
          plot
          threading)
 
-(define (find-peak-in-list data-source validate-peak-fn)
+(define (find-peak-in-list data-source validate-data-fn)
   (let-values ([(peak data-series) (for/fold ([peak #f] [old-data '()])
                                              ([bin (in-list (reverse data-source))]
                                               #:break peak)
                                      (let ([data (append bin old-data)])
-                                       (values (find-peak data #:validate-fn validate-peak-fn) data)))])
+                                       (values (and~> data
+                                                      validate-data-fn
+                                                      find-peak)
+                                               data)))])
     peak))
 
 (define (within-prize-threshold? time-series (threshold 0.02))
