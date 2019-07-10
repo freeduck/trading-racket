@@ -7,15 +7,13 @@
          threading)
 
 (define (find-peak-in-list data-source validate-data-fn)
-  (let-values ([(peak data-series) (for/fold ([peak #f] [old-data '()])
-                                             ([bin (in-list (reverse data-source))]
-                                              #:break peak)
-                                     (let ([data (append bin old-data)])
-                                       (values (and~> data
-                                                      validate-data-fn
-                                                      find-peak)
-                                               data)))])
-    peak))
+  (for/fold ([peak-at '()])
+            ([bin (in-list (reverse data-source))]
+             #:break (regression-analysis? peak-at))
+    (let ([data (append bin peak-at)])
+      (and~> data
+             validate-data-fn
+             find-peak))))
 
 (define (within-prize-threshold? time-series (threshold 0.02))
   (let ([numeric-threshold (* threshold (first-prize-in-series time-series))])
