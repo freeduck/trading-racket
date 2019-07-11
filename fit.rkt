@@ -50,7 +50,8 @@
 
 
 (define ((poly v) x)
-  (for/sum ([c v] [i (in-naturals)])
+  (for/sum ([c v]
+            [i (in-naturals)])
     (* c (expt x i))))
 
 
