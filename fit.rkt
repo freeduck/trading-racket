@@ -26,7 +26,7 @@
     (define b (/ (- sum-y (* a sum-x)) n))
     (values a b (λ(x)(+ (* a x) b)))))
 ;; Polynomial/Multiple regression
-;; Source: https://rosettacode.org/wiki/Category:Racket
+;; Source: https://rosettacode.org/wiki/Polynomial_regression#Racket
 (define (fit x y n)
   (define Y (->col-matrix y))
   (define V (vandermonde-matrix x (+ n 1)))
