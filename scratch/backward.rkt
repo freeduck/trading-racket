@@ -13,7 +13,8 @@
     (let ([data (append bin peak-at)])
       (and~> data
              validate-data-fn
-             find-peak))))
+             data-set->parabola
+             validate-parabola))))
 
 (define (within-prize-threshold? time-series (threshold 0.02))
   (let ([numeric-threshold (* threshold (first-prize-in-series time-series))])

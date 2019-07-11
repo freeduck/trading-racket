@@ -3,8 +3,9 @@
  crypto-trading/math
  plot)
 
-(provide flip find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at
-         (struct-out regression-analysis))
+(provide data-set->parabola flip find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at
+         (struct-out regression-analysis)
+         (struct-out parabola))
 
 (define xs '(0 1  2  3  4  5   6   7   8   9  10))
 (define ys '(1 6 17 34 57 86 121 162 209 262 321))
@@ -25,13 +26,6 @@
                  (- sum-x2 (* (/ n) (sqr sum-x)))))
     (define b (/ (- sum-y (* a sum-x)) n))
     (values a b (λ(x)(+ (* a x) b)))))
-;; Polynomial/Multiple regression
-;; Source: https://rosettacode.org/wiki/Polynomial_regression#Racket
-(define (fit x y n)
-  (define Y (->col-matrix y))
-  (define V (vandermonde-matrix x (+ n 1)))
-  (define VT (matrix-transpose V))
-  (matrix->vector (matrix-solve (matrix* VT V) (matrix* VT Y))))
 
 (define (extract data)
   (values (map (lambda (v)(vector-ref v 0)) data)
@@ -43,16 +37,34 @@
     ;; list transpose
     (apply map vector (list (first transposed) y-reversed ))))
 
-(define (fit-data data [n 2])
-  (apply fit
-         (append (vector->list (transpose data))
-                 (list n))))
+(struct parabola (coefficients focal-length data-set)
+  #:property prop:sequence (λ (s) (regression-analysis-window s)))
+
+(define (data-set->parabola data-set)
+  (let*-values ([(c b a) (vector->values (fit-data data-set))]
+                [(focal-length) (/ 1 (* 4 a))])
+    (parabola (fit-data data-set) focal-length data-set)))
+
+(define (validate-parabola parabola)
+  (parabola-focal-length))
 
 
 (define ((poly v) x)
   (for/sum ([c v]
             [i (in-naturals)])
     (* c (expt x i))))
+
+;; Polynomial/Multiple regression
+;; Source: https://rosettacode.org/wiki/Polynomial_regression#Racket
+(define (fit x y n)
+  (define Y (->col-matrix y))
+  (define V (vandermonde-matrix x (+ n 1)))
+  (define VT (matrix-transpose V))
+  (matrix->vector (matrix-solve (matrix* VT V) (matrix* VT Y))))
+
+(define (fit-data data [n 2])
+  (apply fit
+         (append (transpose data) (list n))))
 
 
 (define (make-fitf data)
