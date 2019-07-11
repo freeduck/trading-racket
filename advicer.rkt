@@ -2,6 +2,7 @@
 (require crypto-trading/fit)
 
 (provide get-advice
+         good-peak
          (struct-out trade-advice)
          (all-from-out crypto-trading/fit))
 
