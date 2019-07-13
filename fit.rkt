@@ -46,12 +46,14 @@
 
 (define (data-set->parabola data-set)
   (let*-values ([(c b a) (vector->values (fit-data data-set))]
-                [(_) (displayln a)]
-                [(focal-length) (/ 1 (* 4 a))]
+                [(b^2) (expt b 2)]
+                [(2a) (* 2 a)]
+                [(4a) (* 2 2a)]
+                [(focal-length) (/ 1 4a)]
                 [(focus-x) (/ (* -1 b)
-                              (* 2 a))]
-                [(focus-y) (/ (- c (- (expt b 2) 1))
-                              (* 4 a))])
+                              2a)]
+                [(focus-y) (/ (- c (- b^2 1))
+                              4a)])
     (parabola (fit-data data-set) focal-length focus-x focus-y data-set)))
 
 (define (validate-parabola parabola)
