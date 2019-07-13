@@ -3,7 +3,7 @@
          mrlib/snip-canvas
          plot
          crypto-trading/fit)
-(provide analysis->plotables plot-on-frame (all-from-out plot))
+(provide parabola->plotables analysis->plotables plot-on-frame (all-from-out plot))
 
 (define (mouse-callback snip event x y)
   (if (and x y)
@@ -41,6 +41,10 @@
                     #:color '(200 200 0))
           (function linearfun first-x last-x
                     #:color '(0 0 200)))))
+
+(define (parabola->plotables p)
+  (list (lines (p))
+        (lines (parabola-data-set p))))
 
 (module+ test
   (require crypto-trading/test-data

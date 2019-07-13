@@ -8,5 +8,4 @@
   (~> (test-data-source first-trade second-trade-target)
       data-set->parabola
       ((λ (para)
-         (plot (list (lines (para))
-                     (lines (parabola-data-set para))))))))
+         (plot (parabola->plotables para))))))

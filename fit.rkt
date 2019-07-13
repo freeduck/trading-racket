@@ -37,7 +37,13 @@
     ;; list transpose
     (apply map vector (list (first transposed) y-reversed ))))
 
-(struct parabola (coefficients focal-length focus-x focus-y data-set)
+(struct parabola (coefficients
+                  focal-length
+                  focus-x
+                  focus-y
+                  directrix
+                  vertex
+                  data-set)
   #:property prop:sequence (λ (self) (regression-analysis-window self))
   #:property prop:procedure (λ (self) (let ([fn (poly (parabola-coefficients self))]
                                             [xs (first (transpose (parabola-data-set self)))])
@@ -52,9 +58,29 @@
                 [(focal-length) (/ 1 4a)]
                 [(focus-x) (/ (* -1 b)
                               2a)]
-                [(focus-y) (/ (- c (- b^2 1))
-                              4a)])
-    (parabola (fit-data data-set) focal-length focus-x focus-y data-set)))
+                [(focus-y) (focus-y a b c)]
+                [(di) (directrix a b c)]
+                [(vertex) (vertex a b c)])
+    (parabola (fit-data data-set)
+              focal-length
+              focus-x
+              focus-y
+              di
+              vertex
+              data-set)))
+
+(define (directrix a b c)
+  (y-on-symetry a b c -1))
+
+(define (focus-y a b c)
+  (y-on-symetry a b c 1))
+
+(define (vertex a b c)
+  (y-on-symetry a b c 0))
+
+(define (y-on-symetry a b c signed-one)
+  (/ (- (* 4 a c) (expt b 2) signed-one)
+     (* 4 a)))
 
 (define (validate-parabola parabola)
   (parabola-focal-length))

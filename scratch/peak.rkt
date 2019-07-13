@@ -8,6 +8,8 @@
 (require "../peak.rkt")
 
 (parameterize ([data-path ".."])
-  (and~> (test-data-source first-trade (- second-trade-target (* 3600 3)))
+  ;; (define end (* 3600 3))
+  (define end 0)
+  (and~> (test-data-source first-trade (- second-trade-target end))
          data-set->parabola
-         validate-peak))
+         ((λ (p) (> (parabola-vertex p) (parabola-directrix p))))))
