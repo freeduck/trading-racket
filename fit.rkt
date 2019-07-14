@@ -70,17 +70,17 @@
               data-set)))
 
 (define (directrix a b c)
-  (y-on-symetry a b c -1))
-
-(define (focus-y a b c)
   (y-on-symetry a b c 1))
 
-(define (vertex a b c)
-  (y-on-symetry a b c 0))
+(define (focus-y a b c)
+  (y-on-symetry a b c -1))
 
 (define (y-on-symetry a b c signed-one)
   (/ (- (* 4 a c) (expt b 2) signed-one)
      (* 4 a)))
+
+(define (vertex a b c)
+  (y-on-symetry a b c 0))
 
 (define (validate-parabola parabola)
   (parabola-focal-length))
