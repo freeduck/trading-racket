@@ -82,9 +82,6 @@
 (define (vertex a b c)
   (y-on-symetry a b c 0))
 
-(define (validate-parabola parabola)
-  (parabola-focal-length))
-
 
 (define ((poly v) x)
   (for/sum ([c v]
