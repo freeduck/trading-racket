@@ -41,14 +41,15 @@
     (validate-data (append-slices sliced-data))))
 (module+ test
   (parameterize ([data-path ".."])
-    (for/first ([data-set (~> (test-data-source noise-start aprox-peak-after-noise)
-                              slice-data
-                              append-slices)]
-                #:when (and~> data-set
-                              validate-data
-                              data-set->parabola
-                              validate-peak))
-      data-set)))
+    (let ([data-set (test-data-source first-trade second-trade-target)])
+      (for/first ([part (~> data-set
+                                slice-data
+                                append-slices)]
+                  #:when (and~> part
+                                validate-data
+                                data-set->parabola
+                                validate-peak))
+        data-set))))
 
 ;; (parameterize ([data-path ".."])
 ;;   (and~> (test-data-source noise-start aprox-peak-after-noise)
