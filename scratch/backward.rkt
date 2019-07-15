@@ -7,13 +7,7 @@
          racket/generator
          plot
          threading)
-(define (prepend-slices slices)
-  (in-generator
-             (for/fold ([data-accum '()])
-                       ([slice (in-list (reverse slices))])
-               (let ([cur-data (append slice data-accum)])
-                 (yield cur-data)
-                 cur-data))))
+
 (define (validate-data peak-analysis)
     (and~> peak-analysis
            within-prize-threshold?))
