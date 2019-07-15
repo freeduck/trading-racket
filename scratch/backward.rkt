@@ -41,15 +41,15 @@
     (validate-data (append-slices sliced-data))))
 (module+ test
   (parameterize ([data-path ".."])
-    (let ([data-set (test-data-source first-trade second-trade-target)])
-      (for/first ([part (~> data-set
-                                slice-data
-                                append-slices)]
-                  #:when (and~> part
-                                validate-data
-                                data-set->parabola
-                                validate-peak))
-        data-set))))
+    (let* ([data-set (test-data-source first-trade second-trade-target)]
+           [first-peak (for/first ([part (~> data-set
+                                             slice-data
+                                             append-slices)]
+                                   #:when (and~> part
+                                                 data-set->parabola
+                                                 validate-peak))
+                         part)])
+      (plot (lines first-peak)))))
 
 ;; (parameterize ([data-path ".."])
 ;;   (and~> (test-data-source noise-start aprox-peak-after-noise)
