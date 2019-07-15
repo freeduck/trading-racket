@@ -30,7 +30,7 @@
 
   (define (within-prize-threshold? time-series (threshold 0.02))
     (let ([numeric-threshold (* threshold (first-prize-in-series time-series))])
-      (if (< (prize-delta time-series)
+      (if (> (prize-delta time-series)
              numeric-threshold)
           time-series
           #f)))
