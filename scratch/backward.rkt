@@ -7,7 +7,7 @@
          racket/generator
          plot
          threading)
-(define (append-slices slices)
+(define (prepend-slices slices)
   (in-generator
              (for/fold ([data-accum '()])
                        ([slice (in-list (reverse slices))])
@@ -38,12 +38,12 @@
   (parameterize ([data-path ".."])
     (define sliced-data (~> (test-data-source noise-start aprox-peak-after-noise)
                             slice-data))
-    (validate-data (append-slices sliced-data))))
+    (validate-data (prepend-slices sliced-data))))
 (module+ test
   (parameterize ([data-path ".."])
     (for/first ([part (~> (test-data-source first-trade second-trade-target)
                           slice-data
-                          append-slices)]
+                          prepend-slices)]
                 #:when (and~> part
                               data-set->parabola
                               validate-peak))
