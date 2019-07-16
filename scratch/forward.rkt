@@ -11,10 +11,6 @@
     (displayln "Hest"))
   (module+ scratch
     (parameterize ([data-path ".."])
-      (plot (lines (for/first ([part (~> (test-data-source first-trade second-trade-target)
+      (plot (lines (first-peak (~> (test-data-source first-trade second-trade-target)
                                          slice-data
-                                         append-slices)]
-                               #:when (and~> part
-                                             data-set->parabola
-                                             validate-peak))
-                     part))))))
+                                         append-slices)))))))

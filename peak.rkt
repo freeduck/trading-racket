@@ -1,6 +1,13 @@
 #lang racket
-(require "fit.rkt")
-(provide validate-peak)
+(require "fit.rkt"
+         threading)
+(provide first-peak validate-peak)
+(define (first-peak data-set)
+  (for/first ([part data-set]
+              #:when (and~> part
+                            data-set->parabola
+                            validate-peak))
+    part))
 (define (validate-peak para)
   (let* ([data-set (parabola-data-set para)]
          [first-x (vector-ref (first data-set) 0)]
