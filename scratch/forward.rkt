@@ -11,6 +11,9 @@
     (displayln "Hest"))
   (module+ scratch
     (parameterize ([data-path ".."])
-      (plot (lines (first-peak (~> (test-data-source first-trade second-trade-target)
-                                         slice-data
-                                         append-slices)))))))
+      (~> (test-data-source first-trade second-trade-target)
+          slice-data
+          append-slices
+          first-peak
+          lines
+          plot))))
