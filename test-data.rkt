@@ -2,7 +2,8 @@
 (require db
          crypto-trading/data
          memoize)
-(provide aprox-peak-after-noise
+(provide select-single-ohlc-field
+         aprox-peak-after-noise
          data-path
          noise-start
          aprox-noise-end
@@ -18,6 +19,21 @@
                                   (string-append (data-path) "/" path))))
 (define (test-data-source start end)
   ((connect-test (*db*)) start end))
+
+(define (select-single-ohlc-field)
+  (query-rows (sqlite3-connect #:database
+                               (string-append (data-path) "/" (*db*)))
+              "select start,open from candles_EUR_XMR"))
+
+(module+ test
+  (module+ select-single-ohlc-field
+    (last (select-single-ohlc-field))))
+
+(module+ test
+  (module+ load-time
+    (time (query-rows (sqlite3-connect #:database
+                                       (string-append (data-path) "/" (*db*)))
+                      "select start,open from candles_EUR_XMR"))))
 
 (define first-trade 1542579840) ; found by hand
 (define noise-start 1542831780)
