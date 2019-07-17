@@ -9,7 +9,7 @@
   (require rackunit)
   (module+ main
     (displayln "Hest"))
-  (module+ scratch
+  (module+ first
     (parameterize ([data-path ".."])
       (~> (test-data-source first-trade second-trade-target)
           slice-data
