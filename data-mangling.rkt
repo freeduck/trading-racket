@@ -19,7 +19,7 @@
                  (yield cur-data)
                  cur-data))))
 
-(define (append-slices slices)
+(define (append-slices slices #:yield-when (yield-when (λ () #t)))
   (in-generator
              (for/fold ([data-accum '()])
                        ([slice (in-list slices)])

@@ -1,12 +1,12 @@
 #lang racket
 (require "fit.rkt"
          threading)
-(provide first-peak validate-peak)
+(provide peak?
+         first-peak
+         validate-peak)
 (define (first-peak data-set)
   (for/first ([part data-set]
-              #:when (and~> part
-                            data-set->parabola
-                            validate-peak))
+              #:when (peak? part))
     part))
 (define (validate-peak para)
   (let* ([data-set (parabola-data-set para)]
@@ -18,3 +18,6 @@
     (if (<= average focus-x last-x)
         para
         #f)))
+
+(define peak? (λ-and~> data-set->parabola
+                       validate-peak))

@@ -13,7 +13,7 @@
     (parameterize ([data-path ".."])
       (~> (test-data-source first-trade second-trade-target)
           slice-data
-          append-slices
+          (append-slices #:yield-when peak?)
           first-peak
           lines
           plot))))
