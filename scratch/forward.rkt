@@ -12,8 +12,7 @@
   (module+ first
     (parameterize ([data-path ".."])
       (~> (test-data-source first-trade second-trade-target)
-          slice-data
-          (append-slices #:yield-when peak?)
+          (peaks #:peak? peak?)
           (sequence-ref 0) 
           lines
           plot))))

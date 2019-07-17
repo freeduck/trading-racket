@@ -1,9 +1,16 @@
 #lang racket
 (require "fit.rkt"
+         "./data-mangling.rkt"
          threading)
-(provide peak?
+(provide peaks
+         peak?
          first-peak
          validate-peak)
+
+(define peaks (λ (data-set #:peak? (peak? peak?))
+                (~> data-set
+                    slice-data
+                    (append-slices #:yield-when peak?))))
 (define (first-peak data-set)
   (for/first ([part data-set]
               #:when (peak? part))
