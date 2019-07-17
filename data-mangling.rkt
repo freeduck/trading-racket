@@ -24,8 +24,11 @@
              (for/fold ([data-accum '()])
                        ([slice (in-list slices)])
                (let ([cur-data (append data-accum slice)])
-                 (yield cur-data)
-                 cur-data))))
+                 (if (yield-when cur-data)
+                     (begin
+                       (yield cur-data)
+                       '())
+                     cur-data)))))
 
 (define (transpose data)
   (vector->list (apply vector-map list data)))
