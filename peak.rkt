@@ -19,10 +19,15 @@
   (let* ([data-set (parabola-data-set para)]
          [first-x (vector-ref (first data-set) 0)]
          [last-x (vector-ref (last data-set) 0)]
+         [first-y (vector-ref (first data-set) 1)]
+         [last-y (vector-ref (last data-set) 1)]
          [average (/ (+ last-x first-x)
                      2)]
+         [offset (+ (* 0.2 (- last-x first-x))
+                    first-x)]
          [focus-x (parabola-focus-x para)])
-    (if (<= average focus-x last-x)
+    (if (and (<= offset focus-x last-x)
+             (< 1.5 (abs (- last-y first-y))))
         para
         #f)))
 
