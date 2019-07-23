@@ -7,15 +7,18 @@
          threading)
 (module+ test
   (require rackunit)
+  (define test-data (parameterize ([data-path ".."])
+                      (select-single-ohlc-field)))
+  (define (plot-peak-# number)
+    (~> test-data
+        peaks
+        (sequence-ref (- 1 number)) 
+        lines
+        plot))
   (module+ main
     (displayln "Hest"))
   (module+ first
-    (parameterize ([data-path ".."])
-      (~> (select-single-ohlc-field)
-          (peaks #:peak? peak?)
-          (sequence-ref 0) 
-          lines
-          plot)))
+    (plot-peak-# 1))
   (module+ second
     (parameterize ([data-path ".."])
       (~> (select-single-ohlc-field)
@@ -26,7 +29,7 @@
   (module+ third
     (parameterize ([data-path ".."])
       (~> (select-single-ohlc-field)
-          (peaks #:peak? peak?)
+          peaks
           (sequence-ref 2) 
           lines
           plot)))
@@ -38,10 +41,31 @@
           lines
           plot)))
   (module+ fifth
-    ; Can we find a s-curve?
     (parameterize ([data-path ".."])
       (~> (select-single-ohlc-field)
-          (peaks #:peak? peak?)
+          peaks
           (sequence-ref 4) 
+          lines
+          plot)))
+  (module+ sixth
+    (parameterize ([data-path ".."])
+      (~> (select-single-ohlc-field)
+          peaks
+          (sequence-ref 5) 
+          lines
+          plot)))
+  (module+ seventh
+    (parameterize ([data-path ".."])
+      (~> (select-single-ohlc-field)
+          peaks
+          (sequence-ref 6) 
+          lines
+          plot)))
+
+  (module+ eighth
+    (parameterize ([data-path ".."])
+      (~> (select-single-ohlc-field)
+          peaks
+          (sequence-ref 7) 
           lines
           plot))))

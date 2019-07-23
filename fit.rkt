@@ -44,7 +44,7 @@
                   directrix
                   vertex
                   data-set)
-  #:property prop:sequence (λ (self) (regression-analysis-window self))
+  #:property prop:sequence (λ (self) (parabola-data-set self))
   #:property prop:procedure (λ (self) (let ([fn (poly (parabola-coefficients self))]
                                             [xs (first (transpose (parabola-data-set self)))])
                                         (for/list ([x (in-list xs)])
