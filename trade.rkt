@@ -4,10 +4,10 @@
          (struct-out eur)
          (struct-out xmr)
          (struct-out account))
-(define (sell amount account)
+(define (sell amount prize account)
   (void))
 
-(define (buy amount account)
+(define (buy amount prize account)
   (void))
 
 (struct account (currencies))

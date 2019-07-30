@@ -24,12 +24,15 @@
             (buy (xmr 5) account))))))
   
   (module+ trade
-    (for/fold ([acc (account (list (eur 100)
-                                   (xmr 20)))])
+    (for/fold ([acc (account (hash eur 100
+                                   xmr 20))])
               ([peak peak-seq])
       (let* ([peak-data (sequence->list peak)]
-            [diff (- (vector-ref (last peak-data) 1)
-                     (vector-ref (first peak-data) 1))])
+             [opening-prize (vector-ref (first peak-data) 1)]
+             [closing-prize (vector-ref (last peak-data) 1)]
+             [diff (- closing-prize opening-prize)]
+             [amount (xmr 5)]
+             [prize (eur closing-prize)])
         (if (> diff 0)
-            (sell (xmr 5) account)
-            (buy (xmr 5) account))))))
+            (sell amount prize account)
+            (buy amount prize account))))))
