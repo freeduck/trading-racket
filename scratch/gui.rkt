@@ -13,6 +13,4 @@
     (define graph (new canvas% [parent window]))
     (send window show #t)
     (~> test-data
-        (sequence-ref 1)
-        lines
-        (plot/dc (send graph get-dc) 0 0 500 500))))
+        sequence-length)))
