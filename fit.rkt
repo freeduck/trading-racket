@@ -1,7 +1,8 @@
 #lang racket
 (require
  crypto-trading/math
- plot)
+ plot
+ racket/serialize)
 
 (provide data-set->parabola flip find-peak squared-error evaluate-models linear-regression poly fit fit-data extract transpose make-fitf peak-at
          (struct-out regression-analysis)
@@ -37,7 +38,7 @@
     ;; list transpose
     (apply map vector (list (first transposed) y-reversed ))))
 
-(struct parabola (coefficients
+(serializable-struct parabola (coefficients
                   focal-length
                   focus-x
                   focus-y

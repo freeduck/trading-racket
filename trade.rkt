@@ -1,17 +1,17 @@
 #lang racket
-(provide sell
-         buy
-         (struct-out eur)
+(provide (struct-out eur)
          (struct-out xmr)
          (struct-out account))
-(define (sell amount prize account)
-  (void))
 
-(define (buy amount prize account)
-  (void))
+
+
+;; (define sell trade)
+;; (define buy sell)
 
 (struct account (currencies))
 
-(struct currency (amount))
+(struct currency (amount)
+  #:property prop:procedure (λ (self)
+                              (currency-amount self)))
 (struct xmr currency ())
 (struct eur currency ())
