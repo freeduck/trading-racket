@@ -12,13 +12,18 @@
                          (select-single-ohlc-field))
                        (peaks)))
   (module+ peak-list
-    (define peak-list (sequence->list peak-seq))
     (module+ serialize
+      (define peak-list (sequence->list peak-seq))
       (require racket/serialize)
       (with-output-to-file "peaks.txt"
         #:mode 'text
         #:exists 'replace
-        (λ () (write (serialize peak-list))))))
+        (λ () (write (serialize peak-list)))))
+    (module+ deserialize
+      (require racket/serialize)
+      (define peak-list (deserialize (with-input-from-file "peaks.txt"
+                                          (λ () (read)))))
+      (first peak-list)))
 
 
 
