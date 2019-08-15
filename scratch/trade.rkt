@@ -21,9 +21,9 @@
         (λ () (write (serialize peak-list)))))
     (module+ deserialize
       (require racket/serialize)
-      (define peak-list (deserialize (with-input-from-file "peaks.txt"
-                                          (λ () (read)))))
-      (first peak-list)))
+      (time (deserialize (with-input-from-file "peaks.txt"
+                           (λ () (read))))
+            (void))))
 
 
 
