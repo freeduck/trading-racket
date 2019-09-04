@@ -11,21 +11,6 @@
   (define peak-seq (~> (parameterize ([data-path ".."])
                          (select-single-ohlc-field))
                        (peaks)))
-  (module+ peak-list
-    (module+ serialize
-      (define peak-list (sequence->list peak-seq))
-      (require racket/serialize)
-      (with-output-to-file "peaks.txt"
-        #:mode 'text
-        #:exists 'replace
-        (λ () (write (serialize peak-list)))))
-    (module+ deserialize
-      (require racket/serialize)
-      (time (deserialize (with-input-from-file "peaks.txt"
-                           (λ () (read))))
-            (void))))
-
-
 
   (module+ trade
     (define (trade amount prize account)
