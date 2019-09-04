@@ -14,20 +14,40 @@
 
   (module+ trade
     (define (trade amount prize account)
+      (displayln "trade")
+      (displayln amount)
+      (displayln (xmr? amount))
+      (displayln (eur? amount))
+      (displayln (xmr? prize))
+      (displayln prize)
       (let ([total (* (amount) (prize))])
-        (cond
-          [(and (xmr? amount)
-                (eur? prize)) (hash-set* account
+        (if (and (xmr? amount)
+                 (eur? prize))
+            (hash-set* account
                                          xmr (- (hash-ref account xmr)
                                                 (amount))
                                          eur (+ (hash-ref account eur)
                                                 total))
-           (and (xmr? amount)
-                (eur? prize)) (hash-set* account
+            (hash-set* account
                                          xmr (+ (hash-ref account xmr)
                                                 (amount))
                                          eur (- (hash-ref account eur)
-                                                total))])))
+                                                total)))
+        ;; (cond
+        ;;   [(and (xmr? amount)
+        ;;         (eur? prize)) (hash-set* account
+        ;;                                  xmr (- (hash-ref account xmr)
+        ;;                                         (amount))
+        ;;                                  eur (+ (hash-ref account eur)
+        ;;                                         total))]
+        ;;   [(and (xmr? amount)
+        ;;         (eur? prize)) (hash-set* account
+        ;;                                  xmr (+ (hash-ref account xmr)
+        ;;                                         (amount))
+        ;;                                  eur (- (hash-ref account eur)
+        ;;                                         total))]
+        ;;   [else (displayln "Hest")])
+        ))
 
     (define (sell amount prize account)
       (trade amount prize account))
@@ -43,5 +63,5 @@
              [amount (xmr 5)]
              [prize (eur closing-prize)])
         (if (> diff 0)
-            (sell amount acc)
-            (buy amount acc))))))
+            (sell amount prize acc)
+            (buy amount prize acc))))))
