@@ -32,22 +32,7 @@
                                          xmr (+ (hash-ref account xmr)
                                                 (amount))
                                          eur (- (hash-ref account eur)
-                                                total)))
-        ;; (cond
-        ;;   [(and (xmr? amount)
-        ;;         (eur? prize)) (hash-set* account
-        ;;                                  xmr (- (hash-ref account xmr)
-        ;;                                         (amount))
-        ;;                                  eur (+ (hash-ref account eur)
-        ;;                                         total))]
-        ;;   [(and (xmr? amount)
-        ;;         (eur? prize)) (hash-set* account
-        ;;                                  xmr (+ (hash-ref account xmr)
-        ;;                                         (amount))
-        ;;                                  eur (- (hash-ref account eur)
-        ;;                                         total))]
-        ;;   [else (displayln "Hest")])
-        ))
+                                                total)))))
 
     (define (sell amount prize account)
       (trade amount prize account))
