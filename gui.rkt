@@ -29,23 +29,23 @@
        [label "Pause"]
        [callback (lambda (button event) (sleep 5))])
 
-  ;; (new canvas% [parent fram]
-  ;;      [paint-callback (lambda (dc)
-  ;;                        (let ([data '()])))])
-
   ; Show the frame by calling its show method
   (send frame show #t))
 
 (module+ plot
   (require plot
            mrlib/snip-canvas)
-  (new button% [parent panel]
-       [label "Right"]
-       [callback (lambda (button event)
-                   (send button set-label "Right click"))])
-  (new )
-  (new snip-canvas%
-                      [parent panel]
-                      [make-snip (lambda (width height)
-                                   (make-2d-plot-snip width height plotables))])
-  (send frame show #t))
+  (let* ([x (build-list 10 values)]
+         [y (list 2.7 2.8 31.4 38.1 58.0 76.2 100.5 130.0 149.3 180.0)]
+         [y2 (list 2.7 2.8 131.4 38.1 158.0 76.2 100.5 130.0 149.3 180.0)]
+         [plotables (box (points (map vector x y)))]
+         [plt (new snip-canvas% [parent panel]
+                   [make-snip (lambda (width height)
+                                (plot-snip (unbox plotables)))])]
+         [btn (new button% [parent panel]
+                   [label "Right"]
+                   [callback (lambda (button event)
+                               
+                               (set-box! plotables (points (map vector x y2)))
+                               (send plt refresh))])])
+    (send frame show #t)))
