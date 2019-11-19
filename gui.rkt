@@ -2,7 +2,9 @@
 (require racket/gui)
 
 ; Make a frame by instantiating the frame% class
-(define frame (new frame% [label "Example"]))
+(define frame (new frame% [label "Example"]
+                   [width 600]
+                   [height 600]))
 (define panel (new horizontal-panel% [parent frame]))
 (module+ play
   ; Make a static text message in the frame
@@ -52,6 +54,6 @@
                    [label "Right"]
                    [callback (lambda (button event)
                                
-                               (set-box! plotables (points (map vector x y2)))
+                               ;; (set-box! plotables (points (map vector x y2)))
                                (send plt refresh))])])
     (send frame show #t)))
