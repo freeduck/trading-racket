@@ -18,7 +18,7 @@
   (select-window (sqlite3-connect #:database
                                   (string-append (data-path) "/" path))))
 (define (test-data-source start end)
-  ((connect-test (*db*)) start end))
+  ((connect-test (*db*)) #:start start #:end end))
 
 (define (select-single-ohlc-field)
   (query-rows (sqlite3-connect #:database
