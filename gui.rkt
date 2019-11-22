@@ -1,4 +1,6 @@
 #lang racket
+;; * GUI
+;; ** Scafolding
 (require racket/gui)
 
 ; Make a frame by instantiating the frame% class
@@ -14,6 +16,7 @@
 (define database "/home/kristian/projects/crypto-trading/2018-11-18-22:21:00-2019-02-18-22:21:00.db")
 (define con (sqlite3-connect #:database database))
 (define data-source (select-window con))
+;; ** Play
 (module+ play
   ; Make a static text message in the frame
   (define msg (new message% [parent frame]
@@ -41,7 +44,7 @@
 
   ; Show the frame by calling its show method
   (send frame show #t))
-
+;; ** Plot
 (module+ plot
   (let* ([x (build-list 10 values)]
          [y (list 2.7 2.8 31.4 38.1 58.0 76.2 100.5 130.0 149.3 180.0)]
@@ -50,6 +53,7 @@
          [plotables (box (lines (data-source)))]
          [plt (new snip-canvas% [parent panel]
                    [make-snip (lambda (width height)
+                                (displayln (unbox plotables))
                                 (plot-snip (unbox plotables)))])]
          [dynamic-plot (new canvas%
                             [parent panel]
@@ -62,6 +66,7 @@
                    [label "Right"]
                    [callback (lambda (button event)
                                
-                               ;; (set-box! plotables (points (map vector x y2)))
-                               (plot/dc (lines (map vector x y2)) (send plt get-dc) 0 0 200 200))])])
+                               (set-box! plotables (points (map vector x y2)))
+                               (let* ([e (send plt get-editor)])
+                                 (send e insert (plot-snip (lines (map vector x y2))) 0 0)))])])
     (send frame show #t)))
