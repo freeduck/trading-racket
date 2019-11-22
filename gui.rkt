@@ -46,14 +46,21 @@
          [y (list 2.7 2.8 31.4 38.1 58.0 76.2 100.5 130.0 149.3 180.0)]
          [y2 (list 2.7 2.8 131.4 38.1 158.0 76.2 100.5 130.0 149.3 180.0)]
          ;; [plotables (box (points (map vector x y)))]
-         [plotables (box (points (data-source)))]
+         [plotables (box (lines (data-source)))]
          [plt (new snip-canvas% [parent panel]
                    [make-snip (lambda (width height)
                                 (plot-snip (unbox plotables)))])]
+         [dynamic-plot (new canvas%
+                            [parent panel]
+                            [paint-callback (λ (canvas dc)
+                                              (plot/dc (unbox plotables)
+                                                       dc
+                                                       0 0
+                                                       (send canvas get-width) (send canvas get-height)))])]
          [btn (new button% [parent panel]
                    [label "Right"]
                    [callback (lambda (button event)
                                
                                ;; (set-box! plotables (points (map vector x y2)))
-                               (send plt refresh))])])
+                               (plot/dc (lines (map vector x y2)) (send plt get-dc) 0 0 200 200))])])
     (send frame show #t)))
