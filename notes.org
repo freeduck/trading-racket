@@ -534,5 +534,6 @@ window size
 ** Focal point parabola
 ** convert to JSON
 #+BEGIN_SRC sh
-  sqlite3  2018-11-18-22\:21\:00-2019-02-18-22\:21\:00.db "select json_object('start', start, 'open', open) as ohcl from candles_EUR_XMR;" | jq -s .
+  sqlite3  2018-11-18-22\:21\:00-2019-02-18-22\:21\:00.db "select json_array(start, open) as ohcl from candles_EUR_XMR;" | jq -s .
+
 #+END_SRC
