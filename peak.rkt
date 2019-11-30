@@ -33,11 +33,19 @@
 
 (define peak? (λ-and~> data-set->parabola
                        validate-peak))
-
+(define (dimensions window)
+  (let ([first-coord (sequence-ref window 0)]
+        [last-coord (sequence-ref window (- (sequence-length window) 1))])
+    (values (vector-ref first-coord 0) (vector*-ref first-coord 1)
+            (vector-ref last-coord 0) (vector*-ref last-coord 1))))
 (module+ test
   (require "test.rkt"
            rackunit
            plot)
   (define peak-seq (~> (select-single-ohlc-field)
                        (peaks)))
-  (plot (lines (sequence-ref peak-seq 0))))
+  (define first-peak (sequence-ref peak-seq 0))
+  (let-values (([first-x first-y last-x last-y] (dimensions first-peak)))
+    (display-lines (list first-x first-y last-x last-y)))
+  ;; (plot (lines (sequence-ref peak-seq 0)))
+  )
