@@ -19,8 +19,8 @@
   (let*-values (([first-x first-y last-x last-y] (dimensions para))
                 ([offset] (offset first-x last-x))
                 ([focus-x] (parabola-focus-x para)))
-    (if (and (<= offset focus-x last-x)
-             (< 1.5 (abs (- last-y first-y))))
+    (if (and (<= offset focus-x last-x) ;; Make sure parabola focus is located on the right side of the data
+             (< 1.5 (abs (- last-y first-y)))) ;; Make sure we have a room for excange prices
         para
         #f)))
 
@@ -33,7 +33,7 @@
             (vector-ref last-coord 0) (vector*-ref last-coord 1))))
 
 (define (offset first-x last-x)
-  (+ (* 0.5 (- last-x first-x))
+  (+ (* 0.6 (- last-x first-x))
                             first-x))
 (module+ test
   (require db
@@ -57,4 +57,12 @@
   (module+ scratch
     (define data-source (~> (sqlite3-connect #:database "2018-11-18-22:21:00-2019-02-18-22:21:00.db")
                             (select-window)))
-    (plot (lines (data-source #:end 1542759780)))))
+    (fit-data (first (slice-data (data-source #:end 1542759780))))))
+(module+ persist-peaks
+  (require db
+           "data.rkt"
+           plot)
+  (define connection (sqlite3-connect #:database "2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
+  (define data-source (~> connection
+                          (select-window)))
+  (define peak-seq (peaks (data-source))))
