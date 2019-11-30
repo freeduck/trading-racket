@@ -1,7 +1,8 @@
 #lang racket
 (require db
          crypto-trading/math)
-(provide select-window)
+(provide data-range
+         select-window)
 
 
 (define ((select-window con) #:start [start #f] #:end [end #f])
