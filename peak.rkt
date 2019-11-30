@@ -36,13 +36,25 @@
   (+ (* 0.5 (- last-x first-x))
                             first-x))
 (module+ test
-  (require "test.rkt"
+  (require db
+           "test.rkt"
+           "data.rkt"
            rackunit
            plot)
-  (define peak-seq (~> (select-single-ohlc-field)
-                       (peaks)))
-  (define first-peak (sequence-ref peak-seq 0))
-  (let-values (([first-x first-y last-x last-y] (dimensions first-peak)))
-    (display-lines (list first-x first-y last-x last-y))
-    (displayln (offset first-x last-x))
-    (plot (lines first-peak))))
+  (module+ plot-first-peak
+;; 1542579840
+;; 76.73
+;; 1542759780
+;; 56.9
+;; 1542669810.0
+    (define peak-seq (~> (select-single-ohlc-field)
+                         (peaks)))
+    (define first-peak (sequence-ref peak-seq 0))
+    (let-values (([first-x first-y last-x last-y] (dimensions first-peak)))
+      (display-lines (list first-x first-y last-x last-y))
+      (displayln (offset first-x last-x))
+      (plot (lines first-peak))))
+  (module+ scratch
+    (define data-source (~> (sqlite3-connect #:database "2018-11-18-22:21:00-2019-02-18-22:21:00.db")
+                            (select-window)))
+    (plot (lines (data-source #:end 1542759780)))))
