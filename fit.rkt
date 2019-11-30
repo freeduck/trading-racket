@@ -198,8 +198,9 @@
 ;;   (define *db*
 ;;     (sqlite3-connect #:database
 ;;                      "data/ohcl-2018-08-22-00:17:13.sqlite"))
-;;   (define s-curve-data (date-range *db*
-;;                                    '(0 50 18 21 8 2018)
-;;                                    '(0 20 21 21 8 2018))))
-;; (plot (list (points   (map vector xs ys))
-;;             (function (poly (fit xs ys 2)))))
+;;   (module+ first-three-hours
+;;            (define s-curve-data (date-range *db*
+;;                                             '(0 50 18 21 8 2018)
+;;                                             '(0 20 21 21 8 2018)))
+;;            (plot (list (points   (map vector xs ys))
+;;             (function (poly (fit xs ys 2)))))))
