@@ -33,3 +33,11 @@
 
 (define peak? (λ-and~> data-set->parabola
                        validate-peak))
+
+(module+ test
+  (require "test.rkt"
+           rackunit
+           plot)
+  (define peak-seq (~> (select-single-ohlc-field)
+                       (peaks)))
+  (plot (lines (sequence-ref peak-seq 0))))
