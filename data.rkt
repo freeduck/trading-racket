@@ -1,5 +1,5 @@
 #lang racket
-(require db
+(require db sql
          crypto-trading/math)
 (provide data-range
          select-window)
@@ -32,4 +32,18 @@
   ;; #(1550528160 44.49)
   ;; #(1550528220 44.49))
   (define con (sqlite3-connect #:database "/home/kristian/projects/crypto-trading/2018-11-18-22:21:00-2019-02-18-22:21:00.db"))
-  (define data-source (select-window con)))
+  (define (make-temp-con)
+    (sqlite3-connect #:database (make-temporary-file)))
+  (module+ all-data
+    (define data-source (select-window con)))
+  (module+ create-table
+    (define con (make-temp-con))
+    ;; (query-exec con "CREATE TABLE IF NOT EXIST")
+    (define new-table (create-table #:if-not-exists trade_analysis
+                                    #:columns
+                                    [id integer #:not-null]
+                                    [x integer #:not-null]
+                                    [y integer #:not-null]
+                                    #:constraints (primary-key id)))
+    (define insert-trade (insert #:into trade_analysis
+                                 #:set [x 1] [y 2]))))
