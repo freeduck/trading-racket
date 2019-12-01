@@ -46,4 +46,15 @@
                                     [y integer #:not-null]
                                     #:constraints (primary-key id)))
     (define insert-trade (insert #:into trade_analysis
-                                 #:set [x 1] [y 2]))))
+                                 #:set [x 1] [y 2]))
+    (define select-all (select id x y
+                               #:from trade_analysis))
+    (define (test)
+      (query-exec con new-table) 
+      (query-exec con new-table) 
+      (query-exec con insert-trade)
+                                 
+      (query-rows con select-all)
+                                 
+      (query-exec con insert-trade)
+      (query-rows con select-all))))
