@@ -37,24 +37,25 @@
   (module+ all-data
     (define data-source (select-window con)))
   (module+ create-table
+    (define  trade-analysis-table "trade_analysis")
     (define con (make-temp-con))
     ;; (query-exec con "CREATE TABLE IF NOT EXIST")
-    (define new-table (create-table #:if-not-exists trade_analysis
+    (define new-table (create-table #:if-not-exists (Ident:AST ,(make-ident-ast trade-analysis-table))
                                     #:columns
                                     [id integer #:not-null]
                                     [x integer #:not-null]
                                     [y integer #:not-null]
                                     #:constraints (primary-key id)))
-    (define insert-trade (insert #:into trade_analysis
+    (define insert-trade (insert #:into (Ident:AST ,(make-ident-ast trade-analysis-table))
                                  #:set [x 1] [y 2]))
+    
+    ;; (define select-all (select id x y
+    ;;                            #:from (TableRef:AST ,(table-ref-qq (make-ident-ast trade-analysis-table)))))
     (define select-all (select id x y
-                               #:from trade_analysis))
+#:from (Ident:AST ,(make-ident-ast trade-analysis-table))))
     (define (test)
       (query-exec con new-table) 
       (query-exec con new-table) 
       (query-exec con insert-trade)
-                                 
-      (query-rows con select-all)
-                                 
       (query-exec con insert-trade)
       (query-rows con select-all))))
