@@ -1,10 +1,10 @@
 #lang racket
 (require db
          sql)
-(define  trade-analysis-table "trade_analysis")
+(define  trade-analysis-table (make-parameter "trade_analysis"))
 (define (ensure-trade-analysis-table con)
   (query-exec con
-              (create-table #:if-not-exists (Ident:AST ,(make-ident-ast trade-analysis-table))
+              (create-table #:if-not-exists (Ident:AST ,(make-ident-ast (trade-analysis-table)))
                             #:columns
                             [id integer #:not-null]
                             [x integer #:not-null]
