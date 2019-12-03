@@ -1,12 +1,15 @@
 #lang racket
-(require sql)
+(require db
+         sql)
 (define  trade-analysis-table "trade_analysis")
-(define ensure-trade-analysis-table (create-table #:if-not-exists (Ident:AST ,(make-ident-ast trade-analysis-table))
-                                                  #:columns
-                                                  [id integer #:not-null]
-                                                  [x integer #:not-null]
-                                                  [y integer #:not-null]
-                                                  #:constraints (primary-key id)))
+(define (ensure-trade-analysis-table con)
+  (query-exec con
+              (create-table #:if-not-exists (Ident:AST ,(make-ident-ast trade-analysis-table))
+                            #:columns
+                            [id integer #:not-null]
+                            [x integer #:not-null]
+                            [y integer #:not-null]
+                            #:constraints (primary-key id))))
 (module+ test
   (require rackunit
            db
@@ -16,4 +19,4 @@
            "data.rkt")
   (define peak-seq (peaks (select-single-ohlc-field)))
   (define con (make-temp-con))
-  (query-exec con ensure-trade-analysis-table))
+  (ensure-trade-analysis-table con))
