@@ -1,6 +1,8 @@
 #lang racket
 (require db
-         sql)
+         sql
+         json
+         threading)
 (define  trade-analysis-table (make-parameter "trade_analysis"))
 (define analysis% (class object%
                     (init connection)
@@ -15,7 +17,17 @@
 (define (insert-trade epoc)
   (insert #:into (Ident:AST ,(make-ident-ast (trade-analysis-table)))
           #:set [epoc ,epoc]))
+
+(define (trade-epoc window)
+  (~> window
+      (sequence-ref 0)
+      (vector-ref 0)))
 (module+ test
+  (module+ to-json
+    (define (first-ten)
+      (define peak-seq (peaks (select-single-ohlc-field)))
+      (define the-ten (stream->list (stream-take (for/stream ([p (sequence->stream peak-seq)])(trade-epoc p)) 10)))
+      (jsexpr->string the-ten)))
   (require rackunit
            db
            sql
