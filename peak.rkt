@@ -5,7 +5,8 @@
 (provide peaks
          peak?
          first-peak
-         validate-peak)
+         validate-peak
+         dimensions)
 
 (define peaks (λ (data-set #:peak? (peak? peak?))
                 (~> data-set

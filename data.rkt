@@ -41,6 +41,7 @@
   (module+ create-table
     (define  trade-analysis-table "trade_analysis")
     (define lim 0)
+    (define x2 2)
     (define con (make-temp-con))
     ;; (query-exec con "CREATE TABLE IF NOT EXIST")
     (define new-table (create-table #:if-not-exists (Ident:AST ,(make-ident-ast trade-analysis-table))
@@ -50,7 +51,7 @@
                                     [y integer #:not-null]
                                     #:constraints (primary-key id)))
     (define insert-trade (insert #:into (Ident:AST ,(make-ident-ast trade-analysis-table))
-                                 #:set [x 1] [y 2]))
+                                 #:set [x ,x2] [y 2]))
     
     ;; (define select-all (select id x y
     ;;                            #:from (TableRef:AST ,(table-ref-qq (make-ident-ast trade-analysis-table)))))

@@ -2,14 +2,19 @@
 (require db
          sql)
 (define  trade-analysis-table (make-parameter "trade_analysis"))
-(define (ensure-trade-analysis-table con)
-  (query-exec con
-              (create-table #:if-not-exists (Ident:AST ,(make-ident-ast (trade-analysis-table)))
-                            #:columns
-                            [id integer #:not-null]
-                            [x integer #:not-null]
-                            [y integer #:not-null]
-                            #:constraints (primary-key id))))
+(define analysis% (class object%
+                    (init connection)
+                    (define con connection)
+                    (query-exec con
+                                (create-table #:if-not-exists (Ident:AST ,(make-ident-ast (trade-analysis-table)))
+                                              #:columns
+                                              [id integer #:not-null]
+                                              [epoc integer #:not-null]
+                                              #:constraints (primary-key id)))
+                    (super-new)))
+(define (insert-trade epoc)
+  (insert #:into (Ident:AST ,(make-ident-ast (trade-analysis-table)))
+          #:set [epoc ,epoc]))
 (module+ test
   (require rackunit
            db
@@ -19,4 +24,4 @@
            "data.rkt")
   (define peak-seq (peaks (select-single-ohlc-field)))
   (define con (make-temp-con))
-  (ensure-trade-analysis-table con))
+  (define analysis (new analysis% [connection con])))
