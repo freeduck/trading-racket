@@ -27,7 +27,11 @@
     (define (first-ten)
       (define peak-seq (peaks (select-single-ohlc-field)))
       (define the-ten (stream->list (stream-take (for/stream ([p (sequence->stream peak-seq)])(trade-epoc p)) 10)))
-      (jsexpr->string the-ten)))
+      (with-output-to-file "trade.json"
+        (λ () (printf (jsexpr->string the-ten))))
+      ;; (with-output-to-file some-file
+    ;; (lambda () (printf "hello world")))
+      ))
   (require rackunit
            db
            sql
