@@ -537,3 +537,7 @@ window size
   sqlite3  2018-11-18-22\:21\:00-2019-02-18-22\:21\:00.db "select json_array(start, open) as ohcl from candles_EUR_XMR;" | jq -s .
 
 #+END_SRC
+Every tenths minute (start is in seconds)
+#+BEGIN_SRC sh
+  sqlite3  ~/projects/gekko/history/kraken_0.1.db "select json_array(start, open) as ohcl from candles_EUR_XMR where (start/60) % 10 = 0  order by start asc;" | jq -s . > all-data-10.json
+#+END_SRC
