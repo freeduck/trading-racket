@@ -5,6 +5,7 @@
 (provide select-single-ohlc-field
          aprox-peak-after-noise
          data-path
+         *db*
          noise-start
          aprox-noise-end
          test-data-source first-trade second-trade-target
