@@ -30,13 +30,16 @@
     (values (vector-ref first-coord 0) (vector*-ref first-coord 1)
             (vector-ref last-coord 0) (vector*-ref last-coord 1))))
 
-(define (middle-of-data window)
+(define (peak? window)
   (define-values (x0 y0 xn yn) (dimensions window))
-  (+ x0 (/ (- xn x0) 2)))
+  (define middle-of-data (+ x0
+                            (/ (- xn x0)
+                               2)))
 
-(define (focus-in-the-ladder-part-of-data window)
-  (define-values (x0 y0 xn yn) (dimensions window))
-  (<= (middle-of-data rows) (focus-x rows) xn))
+  (define focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x rows) xn))
+  (define minimum-prize-span (<= 2 (- yn y0)))
+  (and focus-in-the-ladder-part-of-data
+       minimum-prize-span))
 ;; ** Data set
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
