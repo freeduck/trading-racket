@@ -22,10 +22,21 @@
   (lambda~> sequence->list
             last
             (vector-ref 0)))
+
+(module+ raw
+  (require db
+           plot)
+    (define kraken-db (sqlite3-connect #:database
+                                       "/home/kristian/projects/gekko/history/kraken_0.1.db"))
+    (define rows (query-rows kraken-db "select start,open from candles_EUR_XMR where start < 1547247600")))
+    
+
 (module+ test
   (module+ to-json
     (define (first-ten)
-      (define peak-seq (peaks (select-single-ohlc-field)))
+      (define peak-seq (peaks (parameterize ([data-path "/home/kristian/projects/gekko/history"]
+                                    [*db* "kraken_0.1.db"])
+                       (select-single-ohlc-field))))
       (define the-ten (for/list ([p peak-seq])(trade-epoc p)))
       (with-output-to-file "trade.json"
         (λ () (printf (jsexpr->string the-ten))))
@@ -43,7 +54,7 @@
     (require db)
     (define kraken-db (sqlite3-connect #:database
                                        "/home/kristian/projects/gekko/history/kraken_0.1.db"))
-    (for/fold ([cnt 0])([(point-in-time prize) (in-query kraken-db "select start,open from candles_EUR_XMR")])(+ cnt prize)))
+    (for/fold ([cnt 0])([(point-in-time prize) (in-query kraken-db "select start,open from candles_EUR_XMR where start < 1547247600")])(+ cnt prize)))
   (require rackunit
            db
            sql
