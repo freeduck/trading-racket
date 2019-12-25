@@ -2,7 +2,8 @@
 (require db
          plot
          threading
-         math)
+         math
+         racket/generator)
 
 ;; ** Fit
 (define (transpose data)
@@ -45,6 +46,16 @@
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
 (define rows (query-rows kraken-db "select start,open from candles_EUR_XMR where start < 1547101200"))
 
-(define slices (in-slice 600 (in-list rows)))
+(define slices (in-slice 10 (in-list rows)))
+
+(define (append-slices slices #:yield-when (yield-when (λ () #t)))
+  (in-generator
+   (for/fold ([data-accum '()])
+             ([slice (in-sequences slices)])
+     (let*-values ([(cur-data) (append data-accum slice)])
+       (if (yield-when cur-data)
+           (begin (yield cur-data)
+                  '())
+           cur-data)))))
 
 
