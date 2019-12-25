@@ -1,19 +1,12 @@
 #lang racket
-(require db
+(require "typed/fit.rkt"
+         db
          plot
          threading
-         math
          racket/generator)
-
-;; ** Fit
+;; Data mangeling
 (define (transpose data)
   (vector->list (apply vector-map list data)))
-
-(define (fit x y n)
-  (define Y (->col-matrix y))
-  (define V (vandermonde-matrix x (+ n 1)))
-  (define VT (matrix-transpose V))
-  (matrix->vector (matrix-solve (matrix* VT V) (matrix* VT Y))))
 
 (define (fit-data data [n 2])
   (apply fit
