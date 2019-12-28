@@ -39,11 +39,24 @@
 ;; ** Data set
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
-(define rows (query-rows kraken-db "select start,open from candles_EUR_XMR where start < 1547101200 order by start asc"))
+(define rows (query-rows kraken-db "select start,open from candles_EUR_XMR order by start asc"))
+;; (with-output-to-file "first-part.data"
+;;   (λ () (write (serialize rows))))
+;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
 ;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
 ;;                             read)))
 
 (define slices (in-slice 10 (in-list rows)))
+
+(define (make-peaks slices #:yield-when (yield-when (λ () #t)))
+  (in-generator
+   (let loop ([data-accum '()]
+              [slices (sequence->list slices)])
+     (when (< 0 (length slices))
+       (when (and (< 0 (length data-accum))
+                  (yield-when data-accum))
+         (yield data-accum))
+       (loop (append data-accum (first slices)) (rest slices))))))
 
 (define (append-slices slices #:yield-when (yield-when (λ () #t)))
   (in-generator
