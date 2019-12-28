@@ -1,9 +1,11 @@
 #lang racket
 (require "typed/fit.rkt"
+         json
          db
          plot
          threading
-         racket/generator)
+         racket/generator
+         racket/serialize)
 ;; Data mangeling
 (define (transpose data)
   (vector->list (apply vector-map list data)))
@@ -30,14 +32,16 @@
                             (/ (- xn x0)
                                2)))
 
-  (define focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x rows) xn))
+  (define focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x window) xn))
   (define minimum-prize-span (<= 2 (- yn y0)))
   (and focus-in-the-ladder-part-of-data
        minimum-prize-span))
 ;; ** Data set
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
-(define rows (query-rows kraken-db "select start,open from candles_EUR_XMR where start < 1547101200"))
+(define rows (query-rows kraken-db "select start,open from candles_EUR_XMR where start < 1547101200 order by start asc"))
+;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
+;;                             read)))
 
 (define slices (in-slice 10 (in-list rows)))
 
@@ -52,3 +56,12 @@
            cur-data)))))
 
 
+(module+ export
+  (define (save-as-json slices)
+    (with-output-to-file "trade.json"
+      (λ () (printf (jsexpr->string (for/list ([p  (append-slices slices #:yield-when peak?)])
+                                      (let ([x (vector-ref (last p) 0)])
+                                        (begin
+                                          (displayln x)
+                                          x))))))
+      #:exists 'replace)))
