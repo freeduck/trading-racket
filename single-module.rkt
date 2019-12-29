@@ -27,16 +27,17 @@
     (values (vector-ref first-coord 0) (vector*-ref first-coord 1)
             (vector-ref last-coord 0) (vector*-ref last-coord 1))))
 
+(define number-of-coins (make-parameter 1))
 (define (peak? window)
   (define-values (x0 y0 xn yn) (dimensions window))
-  (define middle-of-data (+ x0
-                            (/ (- xn x0)
-                               2)))
-
-  (define focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x window) xn))
-  (define minimum-prize-span (<= 2 (abs (- yn y0))))
-  (and focus-in-the-ladder-part-of-data
-       minimum-prize-span))
+  (define price-diff (abs (- yn y0)))
+  (if (< price-diff (* 0.04 (* (number-of-coins) yn)))
+      #f
+      (let* ([middle-of-data (+ x0
+                                (/ (- xn x0)
+                                   2))]
+             [focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x window) xn)])
+        focus-in-the-ladder-part-of-data)))
 ;; ** Data set
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
