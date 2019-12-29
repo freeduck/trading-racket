@@ -48,18 +48,6 @@
 
 (define slices (in-slice 10 (in-list rows)))
 
-(define (make-peaks slices #:yield-when (yield-when (λ () #t)))
-  (in-generator
-   (let loop ([data-accum '()]
-              [slices (sequence->list slices)])
-     (when (< 0 (length slices))
-       (if (and (< 0 (length data-accum))
-                  (yield-when data-accum))
-           (begin
-             (yield data-accum)
-             (loop '() (rest slices)))
-           (loop (append data-accum (first slices)) (rest slices)))))))
-
 (define (append-slices slices #:yield-when (yield-when (λ () #t)))
   (in-generator
    (for/fold ([data-accum '()])
@@ -69,27 +57,16 @@
            (begin (yield cur-data)
                   '())
            cur-data)))))
+
 (define last-x (lambda~> last
                          (vector-ref 0)))
-
-(define (find-peaks slices)
-  (for/fold ([data-accum '()]
-             [peaks '()])
-            ([s (in-sequences slices)])
-    (let ([window (append data-accum s)])
-      (if (peak? window)
-          (values '() (append peaks (list (vector-ref (last s) 0))))
-          (values window peaks)))))
 
 (module+ export
   (define (save-as-json slices)
     (with-output-to-file "trade.json"
-      (λ () (printf (jsexpr->string (for/list ([p  (make-peaks slices #:yield-when peak?)])
-                                      (let ([x (vector-ref (last p) 0)])
-                                        (begin
-                                          (displayln x)
-                                          x))))))
+      (λ () (printf (jsexpr->string (for/list ([p  (append-slices slices #:yield-when peak?)])
+                                      (last-x p)))))
       #:exists 'replace)))
 
 (define (print-peaks slices)
-  (for ([p (make-peaks slices #:yield-when peak?)])(displayln (last-x p))))
+  (for ([p (append-slices slices #:yield-when peak?)])(displayln (last-x p))))
