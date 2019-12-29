@@ -5,7 +5,8 @@
          plot
          threading
          racket/generator
-         racket/serialize)
+         racket/serialize
+         racket/date)
 ;; Data mangeling
 (define (transpose data)
   (vector->list (apply vector-map list data)))
@@ -33,7 +34,7 @@
                                2)))
 
   (define focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x window) xn))
-  (define minimum-prize-span (<= 2 (- yn y0)))
+  (define minimum-prize-span (<= 2 (abs (- yn y0))))
   (and focus-in-the-ladder-part-of-data
        minimum-prize-span))
 ;; ** Data set
@@ -79,8 +80,10 @@
 
 (define (print-peaks slices)
   (for ([p (append-slices slices #:yield-when peak?)])(displayln (last-x p))))
-(define (peak-stream start)
-  (~> (get-window #:start start)
+(define (peak-stream #:start (start 0)
+                     #:end (end (max-x))
+                     #:connection (connection kraken-db))
+  (~> (get-window #:start start #:end end #:connection connection)
       slice-rows
       (append-slices #:yield-when peak?)
       sequence->stream))
@@ -88,4 +91,4 @@
   (require rackunit)
   (let ([slices (peak-stream 0)])
     (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
-                                             (last-x p)))))
+                                                         (last-x p)))))
