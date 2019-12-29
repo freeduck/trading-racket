@@ -40,13 +40,22 @@
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
 ;; (define rows (query-rows kraken-db "select start,open from candles_EUR_XMR order by start asc"))
+;; first test window: 1547101200
 ;; (with-output-to-file "first-part.data"
 ;;   (λ () (write (serialize rows))))
-(define rows (deserialize (with-input-from-file "first-part.data" read)))
+;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
 ;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
 ;;                             read)))
-
-(define slices (in-slice 10 (in-list rows)))
+(define (max-x)
+  (query-value kraken-db "select max(start) from candles_EUR_XMR"))
+(define (get-window #:start (start 0)
+                    #:end (end (max-x))
+                    #:connection (connection kraken-db))
+  (query-rows connection "select start,open from candles_EUR_XMR where start > $1 and start < $2 order by start asc" start end))
+;; (define slices (in-slice 10 (in-list rows)))
+(define slice-size (make-parameter 10))
+(define slice-rows (lambda-and~> in-list
+                                 (in-slice (slice-size) _)))
 
 (define (append-slices slices #:yield-when (yield-when (λ () #t)))
   (in-generator
@@ -70,3 +79,13 @@
 
 (define (print-peaks slices)
   (for ([p (append-slices slices #:yield-when peak?)])(displayln (last-x p))))
+(define (peak-stream start)
+  (~> (get-window #:start start)
+      slice-rows
+      (append-slices #:yield-when peak?)
+      sequence->stream))
+(module+ test
+  (require rackunit)
+  (let ([slices (peak-stream 0)])
+    (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
+                                             (last-x p)))))
