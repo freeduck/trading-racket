@@ -39,10 +39,10 @@
 ;; ** Data set
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
-(define rows (query-rows kraken-db "select start,open from candles_EUR_XMR order by start asc"))
+;; (define rows (query-rows kraken-db "select start,open from candles_EUR_XMR order by start asc"))
 ;; (with-output-to-file "first-part.data"
 ;;   (λ () (write (serialize rows))))
-;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
+(define rows (deserialize (with-input-from-file "first-part.data" read)))
 ;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
 ;;                             read)))
 
@@ -53,10 +53,12 @@
    (let loop ([data-accum '()]
               [slices (sequence->list slices)])
      (when (< 0 (length slices))
-       (when (and (< 0 (length data-accum))
+       (if (and (< 0 (length data-accum))
                   (yield-when data-accum))
-         (yield data-accum))
-       (loop (append data-accum (first slices)) (rest slices))))))
+           (begin
+             (yield data-accum)
+             (loop '() (rest slices)))
+           (loop (append data-accum (first slices)) (rest slices)))))))
 
 (define (append-slices slices #:yield-when (yield-when (λ () #t)))
   (in-generator
@@ -67,14 +69,27 @@
            (begin (yield cur-data)
                   '())
            cur-data)))))
+(define last-x (lambda~> last
+                         (vector-ref 0)))
 
+(define (find-peaks slices)
+  (for/fold ([data-accum '()]
+             [peaks '()])
+            ([s (in-sequences slices)])
+    (let ([window (append data-accum s)])
+      (if (peak? window)
+          (values '() (append peaks (list (vector-ref (last s) 0))))
+          (values window peaks)))))
 
 (module+ export
   (define (save-as-json slices)
     (with-output-to-file "trade.json"
-      (λ () (printf (jsexpr->string (for/list ([p  (append-slices slices #:yield-when peak?)])
+      (λ () (printf (jsexpr->string (for/list ([p  (make-peaks slices #:yield-when peak?)])
                                       (let ([x (vector-ref (last p) 0)])
                                         (begin
                                           (displayln x)
                                           x))))))
       #:exists 'replace)))
+
+(define (print-peaks slices)
+  (for ([p (make-peaks slices #:yield-when peak?)])(displayln (last-x p))))
