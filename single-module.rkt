@@ -31,7 +31,7 @@
 (define (peak? window)
   (define-values (x0 y0 xn yn) (dimensions window))
   (define price-diff (abs (- yn y0)))
-  (if (< price-diff (* 0.04 (* (number-of-coins) yn)))
+  (if (< price-diff (* 0.04 (number-of-coins) yn))
       #f
       (let* ([middle-of-data (+ x0
                                 (/ (- xn x0)
