@@ -73,9 +73,9 @@
                          (vector-ref 0)))
 
 (module+ export
-  (define (save-as-json slices)
+  (define (save-as-json)
     (with-output-to-file "trade.json"
-      (λ () (printf (jsexpr->string (for/list ([p  (append-slices slices #:yield-when peak?)])
+      (λ () (printf (jsexpr->string (for/list ([p  (peak-stream)])
                                       (last-x p)))))
       #:exists 'replace)))
 
