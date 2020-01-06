@@ -93,3 +93,22 @@
   (let ([slices (peak-stream 0)])
     (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
                                                          (last-x p)))))
+(module+ trade
+  (for/fold ([xmr 20]
+             [eur 1000]
+             [initial-price #f]
+             [final-price 0])
+            ([p (in-stream (peak-stream (get-window #:end 1547695800)))])
+    (let*-values ([(x0 y0 xn yn) (dimensions p)]
+                  [(price-diff) (- yn y0)]
+                  [(initial-price) (if (eq? #f initial-price)
+                                     y0
+                                     initial-price)])
+      (if (> price-diff 0)
+          (begin
+            (displayln "Sell")
+            (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
+          (begin
+            (displayln "Buy")
+            (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))
+          ))))
