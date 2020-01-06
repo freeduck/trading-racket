@@ -27,8 +27,19 @@
     (values (vector-ref first-coord 0) (vector*-ref first-coord 1)
             (vector-ref last-coord 0) (vector*-ref last-coord 1))))
 
+(define (reverse-peak? window)
+  (not (~> window
+           ((λ (w) (let* ([t (transpose w)]
+                          [x (first t)]
+                          [y (second t)])
+                     (map list->vector (transpose (list (list->vector x) (list->vector (reverse y))))))))
+           (take _ (min (* 60 24)
+                        (length window)))
+           (peak-stream _ #:peak? forward-peak?)
+           stream-empty?)))
+
 (define number-of-coins (make-parameter 1))
-(define (peak? window)
+(define (forward-peak? window)
   (define-values (x0 y0 xn yn) (dimensions window))
   (define price-diff (abs (- yn y0)))
   (if (< price-diff (* 0.04 (number-of-coins) yn))
@@ -38,6 +49,12 @@
                                    2))]
              [focus-in-the-ladder-part-of-data (<= middle-of-data  (focus-x window) xn)])
         focus-in-the-ladder-part-of-data)))
+
+(define (peak? window)
+  (let ([forward-period (* 60 24 5)])
+    (if (> forward-period (length window))
+        (forward-peak? window)
+        (reverse-peak? window))))
 ;; ** Data set
 (define kraken-db (sqlite3-connect #:database
                                    "/home/kristian/projects/gekko/history/kraken_0.1.db"))
@@ -75,16 +92,15 @@
 (module+ export
   (define (save-as-json)
     (with-output-to-file "trade.json"
-      (λ () (printf (jsexpr->string (for/list ([p  (peak-stream)])
+      (λ () (printf (jsexpr->string (for/list ([p  (peak-stream (get-window))])
                                       (last-x p)))))
       #:exists 'replace)))
 
 (define (print-peaks slices)
   (for ([p (append-slices slices #:yield-when peak?)])(displayln (last-x p))))
-(define (peak-stream #:start (start 0)
-                     #:end (end (max-x))
-                     #:connection (connection kraken-db))
-  (~> (get-window #:start start #:end end #:connection connection)
+
+(define (peak-stream window #:peak? (peak? peak?))
+  (~> window
       slice-rows
       (append-slices #:yield-when peak?)
       sequence->stream))
@@ -93,6 +109,11 @@
   (let ([slices (peak-stream 0)])
     (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
                                                          (last-x p)))))
+(module+ reverse
+  (for/list ([p (in-stream (peak-stream (get-window #:start 1551049200
+                                                    #:end 1554064200)))])
+    (last-x p)))
+
 (module+ trade
   (for/fold ([xmr 20]
              [eur 1000]
