@@ -116,17 +116,26 @@
 
 ;; Find previous trade of same type where historic price is the same or lower for buy and same or higher for sell
 (define (find-trade-amount trade-history trade-type current-price)
-  (let ([historic-trades (reverse (takef trade-history (λ (trade)
-                                                         (not (and (eq? trade-type (first trade))
-                                                                   ((if (eq? 'buy trade-type)
-                                                                        <=
-                                                                        >=) (second trade) current-price))))))])
-    (foldl (λ (trade acc)
-             (if (eq? 'buy (first trade))
-                 (+ acc 5)
-                 (- acc 5))) 0 (if (eq? trade-type (first historic-trades))
-                                   (rest historic-trades)
-                                   historic-trades))))
+  (let* ([historic-trades (reverse (takef trade-history (λ (trade)
+                                                          (not (and (eq? trade-type (first trade))
+                                                                    ((if (eq? 'buy trade-type)
+                                                                         <=
+                                                                         >=) (second trade) current-price))))))]
+         [level (foldl (λ (trade acc)
+                         (if (eq? 'buy (first trade))
+                             (+ acc 5)
+                             (- acc 5))) 0 (if (eq? trade-type (first historic-trades))
+                                               (rest historic-trades)
+                                               historic-trades))])
+    (if (or (eq? 0 level)
+            (and (eq? trade-type 'buy)
+                 (> level 0))
+            (and (eq? trade-type 'sell)
+                 (< level 0))) 
+        5
+        (if (eq? trade-type 'buy)
+            (abs level)
+            level))))
 
 
 (module+ trading-strategies
