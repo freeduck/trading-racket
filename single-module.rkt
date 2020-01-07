@@ -116,40 +116,45 @@
 
 ;; Find previous trade of same type where historic price is the same or lower for buy and same or higher for sell
 (define (find-trade-amount trade-history trade-type current-price)
-  (let* ([historic-trades (reverse (takef trade-history (λ (trade)
-                                                          (not (and (eq? trade-type (first trade))
-                                                                    ((if (eq? 'buy trade-type)
-                                                                         <=
-                                                                         >=) (second trade) current-price))))))]
-         [level (foldl (λ (trade acc)
-                         (if (eq? 'buy (first trade))
-                             (+ acc 5)
-                             (- acc 5))) 0 (if (eq? trade-type (first historic-trades))
-                                               (rest historic-trades)
-                                               historic-trades))])
-    (if (or (eq? 0 level)
-            (and (eq? trade-type 'buy)
-                 (> level 0))
-            (and (eq? trade-type 'sell)
-                 (< level 0))) 
-        5
-        (if (eq? trade-type 'buy)
-            (abs level)
-            level))))
+  (if (empty? trade-history)
+      5
+      (let* ([historic-trades (reverse (takef trade-history (λ (trade)
+                                                              (not (and (eq? trade-type (first trade))
+                                                                        ((if (eq? 'buy trade-type)
+                                                                             <=
+                                                                             >=) (second trade) current-price))))))]
+             [level (foldl (λ (trade acc)
+                             (if (eq? 'buy (first trade))
+                                 (+ acc 5)
+                                 (- acc 5))) 0 (if (eq? trade-type (first historic-trades))
+                                                   (rest historic-trades)
+                                                   historic-trades))])
+        (if (or (eq? 0 level)
+                (and (eq? trade-type 'buy)
+                     (> level 0))
+                (and (eq? trade-type 'sell)
+                     (< level 0))) 
+            5
+            (if (eq? trade-type 'buy)
+                (abs level)
+                level)))))
 
 
 (module+ trading-strategies
   (module+ same-amount
     (for/fold ([xmr 20]
-               [eur 1000]
+               [eur 2000]
                [initial-price #f]
                [final-price 0])
-              ([p (in-stream (peak-stream (get-window #:end 1547695800)))])
+              ([p (in-stream (peak-stream (get-window)))])
       (let*-values ([(x0 y0 xn yn) (dimensions p)]
                     [(price-diff) (- yn y0)]
                     [(initial-price) (if (eq? #f initial-price)
                                          y0
                                          initial-price)])
+        (when (< eur 0)
+          (displayln eur)
+          (error "No more funding"))
         (if (> price-diff 0)
             (begin
               (displayln "Sell")
@@ -163,16 +168,20 @@
                  [eur 1000]
                  [initial-price #f]
                  [final-price 0]
-                 [previous-sales '()])
-                ([p (in-stream (peak-stream (get-window #:end 1547695800)))])
+                 [historic-trades '()])
+                ([p (in-stream (peak-stream (get-window)))])
         (let*-values ([(x0 y0 xn yn) (dimensions p)]
                       [(price-diff) (- yn y0)]
                       [(initial-price) (if (eq? #f initial-price)
                                            y0
-                                           initial-price)])
-          (if (> price-diff 0)
-              (values (- xmr 5) (+ eur (* yn 5)) initial-price yn (cons (list 'sell yn) previous-sales))
-              (values (+ xmr 5) (- eur (* yn 5)) initial-price yn (cons (list 'buy yn) previous-sales))))))
+                                           initial-price)]
+                      [(trade-type) (if (> price-diff 0)
+                                        'sell
+                                        'buy)]
+                      [(amount) (find-trade-amount historic-trades trade-type yn)])
+          (if (eq? 'sell trade-type)
+              (values (- xmr amount) (+ eur (* yn amount)) initial-price yn (cons (list 'sell yn) historic-trades))
+              (values (+ xmr amount) (- eur (* yn amount)) initial-price yn (cons (list 'buy yn) historic-trades))))))
     ;; we are buying
     ;; (define trade-type 'buy)
     ;; (define current-price 37.63)
