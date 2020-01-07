@@ -131,5 +131,4 @@
             (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
           (begin
             (displayln "Buy")
-            (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))
-          ))))
+            (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
