@@ -114,21 +114,77 @@
                                                     #:end 1554064200)))])
     (last-x p)))
 
-(module+ trade
-  (for/fold ([xmr 20]
-             [eur 1000]
-             [initial-price #f]
-             [final-price 0])
-            ([p (in-stream (peak-stream (get-window #:end 1547695800)))])
-    (let*-values ([(x0 y0 xn yn) (dimensions p)]
-                  [(price-diff) (- yn y0)]
-                  [(initial-price) (if (eq? #f initial-price)
-                                     y0
-                                     initial-price)])
-      (if (> price-diff 0)
-          (begin
-            (displayln "Sell")
-            (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
-          (begin
-            (displayln "Buy")
-            (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
+;; Find previous trade of same type where historic price is the same or lower for buy and same or higher for sell
+(define (find-trade-amount trade-history trade-type current-price)
+  (let ([historic-trades (reverse (takef trade-history (λ (trade)
+                                                         (not (and (eq? trade-type (first trade))
+                                                                   ((if (eq? 'buy trade-type)
+                                                                        <=
+                                                                        >=) (second trade) current-price))))))])
+    (foldl (λ (trade acc)
+             (if (eq? 'buy (first trade))
+                 (+ acc 5)
+                 (- acc 5))) 0 (if (eq? trade-type (first historic-trades))
+                                   (rest historic-trades)
+                                   historic-trades))))
+
+
+(module+ trading-strategies
+  (module+ same-amount
+    (for/fold ([xmr 20]
+               [eur 1000]
+               [initial-price #f]
+               [final-price 0])
+              ([p (in-stream (peak-stream (get-window #:end 1547695800)))])
+      (let*-values ([(x0 y0 xn yn) (dimensions p)]
+                    [(price-diff) (- yn y0)]
+                    [(initial-price) (if (eq? #f initial-price)
+                                         y0
+                                         initial-price)])
+        (if (> price-diff 0)
+            (begin
+              (displayln "Sell")
+              (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
+            (begin
+              (displayln "Buy")
+              (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
+  (module+ level
+    (define (find-peaks)
+      (for/fold ([xmr 20]
+                 [eur 1000]
+                 [initial-price #f]
+                 [final-price 0]
+                 [previous-sales '()])
+                ([p (in-stream (peak-stream (get-window #:end 1547695800)))])
+        (let*-values ([(x0 y0 xn yn) (dimensions p)]
+                      [(price-diff) (- yn y0)]
+                      [(initial-price) (if (eq? #f initial-price)
+                                           y0
+                                           initial-price)])
+          (if (> price-diff 0)
+              (values (- xmr 5) (+ eur (* yn 5)) initial-price yn (cons (list 'sell yn) previous-sales))
+              (values (+ xmr 5) (- eur (* yn 5)) initial-price yn (cons (list 'buy yn) previous-sales))))))
+    ;; we are buying
+    ;; (define trade-type 'buy)
+    ;; (define current-price 37.63)
+    ;; thesis one:
+    ;; if we meet a trade of the same type we recurs
+    ;; and let it eat what it can.
+    ;; the list must be a iterator which can be passed.
+    ;; '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1))
+    ;; (define trade-history '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1)))
+    (module+ test-data
+      (define trade-type 'buy)
+      (define current-price 37.63)
+      (define trade-history '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1))))
+    
+    
+
+
+    #;(define (find-trade-amount trade-type trades)
+      (for/fold ([amount 0]
+                 [processed-trades '()])
+                ([t trades])
+        (if (not (eq? trade-type (first t)))
+            (find-trade-amount )
+            #t))))) ;nonsense
