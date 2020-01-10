@@ -172,7 +172,7 @@
                [eur 2000]
                [initial-price #f]
                [final-price 0])
-              ([p (in-stream (peak-stream (get-window)))])
+              ([p (in-stream (peak-stream (get-window #:start 1546297200)))])
       (let*-values ([(x0 y0 xn yn) (dimensions p)]
                     [(price-diff) (- yn y0)]
                     [(initial-price) (if (eq? #f initial-price)
