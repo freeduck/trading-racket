@@ -168,7 +168,7 @@
               (values (+ xmr amount) (- eur (* yn amount)) initial-price yn (cons (list 'buy amount yn) historic-trades))))))
   
   (module+ same-amount
-    (for/fold ([xmr 20]
+    (for/fold ([xmr 30]
                [eur 2000]
                [initial-price #f]
                [final-price 0])
