@@ -159,6 +159,10 @@
                                         'sell
                                         'buy)]
                       [(amount) (amount-fn historic-trades trade-type yn)])
+          (when (< eur 0)
+            (displayln (string-append "No more funding" (number->string xn) (number->string xmr))))
+          (when (< xmr 0)
+            (displayln (string-append "No more coins" (number->string xn) (number->string  xmr))))
           (if (eq? 'sell trade-type)
               (values (- xmr amount) (+ eur (* yn amount)) initial-price yn (cons (list 'sell amount yn) historic-trades))
               (values (+ xmr amount) (- eur (* yn amount)) initial-price yn (cons (list 'buy amount yn) historic-trades))))))
