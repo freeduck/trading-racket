@@ -179,8 +179,9 @@
                                          y0
                                          initial-price)])
         (when (< eur 0)
-          (displayln eur)
           (error "No more funding"))
+        (when (< xmr 0)
+          (error "No more coins"))
         (if (> price-diff 0)
             (begin
               (displayln "Sell")
