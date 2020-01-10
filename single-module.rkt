@@ -38,11 +38,10 @@
            (peak-stream _ #:peak? forward-peak?)
            stream-empty?)))
 
-(define number-of-coins (make-parameter 1))
 (define (forward-peak? window)
   (define-values (x0 y0 xn yn) (dimensions window))
   (define price-diff (abs (- yn y0)))
-  (if (< price-diff (* 0.04 (number-of-coins) yn))
+  (if (< price-diff (* 0.08 yn))
       #f
       (let* ([middle-of-data (+ x0
                                 (/ (- xn x0)
@@ -114,17 +113,18 @@
                                                     #:end 1554064200)))])
     (last-x p)))
 
-;; Find previous trade of same type where historic price is the same or lower for buy and same or higher for sell
+(define number-of-coins (make-parameter 1))
+;; Find previous trade where historic price is the same or lower for buy and same or higher for sell
 (define (find-trade-amount trade-history trade-type current-price)
   (if (empty? trade-history)
-      5
+      (number-of-coins)
       (let* ([historic-trades (reverse (takef trade-history (λ (trade)
                                                               (let ([historic-price (third trade)]
                                                                     [compare-operator (if (eq? 'buy trade-type)
                                                                                           <=
                                                                                           >=)])
                                                                 (not 
-                                                                 (compare-operator historic-value current-price))))))]
+                                                                 (compare-operator historic-price current-price))))))]
              [level (foldl (λ (trade acc)
                              (let ([historic-trade-type (first trade)]
                                    [historic-amount (second trade)])
@@ -136,7 +136,7 @@
                      (> level 0))
                 (and (eq? trade-type 'sell)
                      (< level 0))) 
-            5
+            (number-of-coins)
             (if (eq? trade-type 'buy)
                 (abs level)
                 level)))))
