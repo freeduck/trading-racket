@@ -5,9 +5,8 @@
          plot
          threading
          racket/generator
-         racket/serialize
          racket/date)
-;; Data mangeling
+;; ** Data mangling
 (define (transpose data)
   (vector->list (apply vector-map list data)))
 
@@ -54,66 +53,7 @@
     (if (> forward-period (length window))
         (forward-peak? window)
         (reverse-peak? window))))
-;; ** Data set
-(define kraken-db (sqlite3-connect #:database
-                                   "/home/kristian/projects/gekko/history/kraken_0.1.db"))
-;; (define rows (query-rows kraken-db "select start,open from candles_EUR_XMR order by start asc"))
-;; first test window: 1547101200
-;; (with-output-to-file "first-part.data"
-;;   (λ () (write (serialize rows))))
-;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
-;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
-;;                             read)))
-(define (max-x)
-  (query-value kraken-db "select max(start) from candles_EUR_XMR"))
-(define (get-window #:start (start 0)
-                    #:end (end (max-x))
-                    #:connection (connection kraken-db))
-  (query-rows connection "select start,open from candles_EUR_XMR where start > $1 and start < $2 order by start asc" start end))
-;; (define slices (in-slice 10 (in-list rows)))
-(define slice-size (make-parameter 10))
-(define slice-rows (lambda-and~> in-list
-                                 (in-slice (slice-size) _)))
-
-(define (append-slices slices #:yield-when (yield-when (λ () #t)))
-  (in-generator
-   (for/fold ([data-accum '()])
-             ([slice (in-sequences slices)])
-     (let*-values ([(cur-data) (append data-accum slice)])
-       (if (yield-when cur-data)
-           (begin (yield cur-data)
-                  '())
-           cur-data)))))
-
-(define last-x (lambda~> last
-                         (vector-ref 0)))
-
-(module+ export
-  (define (save-as-json)
-    (with-output-to-file "trade.json"
-      (λ () (printf (jsexpr->string (for/list ([p  (peak-stream (get-window))])
-                                      (last-x p)))))
-      #:exists 'replace)))
-
-(define (print-peaks slices)
-  (for ([p (append-slices slices #:yield-when peak?)])(displayln (last-x p))))
-
-(define (peak-stream window #:peak? (peak? peak?))
-  (~> window
-      slice-rows
-      (append-slices #:yield-when peak?)
-      sequence->stream))
-(module+ test
-  (require rackunit)
-  (let ([slices (peak-stream 0)])
-    (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
-                                                         (last-x p)))))
-(module+ reverse
-  (for/list ([p (in-stream (peak-stream (get-window #:start 1551049200
-                                                    #:end 1554064200)))])
-    (last-x p)))
-
-(define number-of-coins (make-parameter 1))
+;; ** Trading
 ;; Find previous trade where historic price is the same or lower for buy and same or higher for sell
 (define (find-trade-amount trade-history trade-type current-price)
   (if (empty? trade-history)
@@ -140,7 +80,86 @@
             (if (eq? trade-type 'buy)
                 (abs level)
                 level)))))
+;; ** Data set
+(define kraken-db (sqlite3-connect #:database
+                                   "/home/kristian/projects/gekko/history/kraken_0.1.db"))
+;; (define rows (query-rows kraken-db "select start,open from candles_EUR_XMR order by start asc"))
+;; first test window: 1547101200
+(define (max-x)
+  (query-value kraken-db "select max(start) from candles_EUR_XMR"))
+(define select-window (virtual-statement "select start,open from candles_EUR_XMR where start > $1 and start < $2 order by start asc"))
+(define (get-window #:start (start 0)
+                    #:end (end (max-x))
+                    #:connection (connection kraken-db))
+  (query-rows connection "select start,open from candles_EUR_XMR where start > $1 and start < $2 order by start asc" start end))
+;; (define slices (in-slice 10 (in-list rows)))
+(define slice-size (make-parameter 10))
+(define slice-rows (lambda-and~> in-list
+                                 (in-slice (slice-size) _)))
 
+(define (append-slices slices #:yield-when (yield-when (λ () #t)))
+  (in-generator
+   (for/fold ([data-accum '()])
+             ([slice (in-sequences slices)])
+     (let*-values ([(cur-data) (append data-accum slice)])
+       (if (yield-when cur-data)
+           (begin (yield cur-data)
+                  '())
+           cur-data)))))
+
+(define last-x (lambda~> last
+                         (vector-ref 0)))
+;; ** JSON
+(module+ export
+  (define (save-as-json)
+    (with-output-to-file "trade.json"
+      (λ () (printf (jsexpr->string (for/list ([p  (peak-stream (get-window))])
+                                      (last-x p)))))
+      #:exists 'replace)))
+;; ** Debugging
+(define (print-peaks slices)
+  (for ([p (append-slices slices #:yield-when peak?)])(displayln (last-x p))))
+
+(define (plot-with-x-as-time plottables #:new-window (new-window #t))
+  (plot-new-window? new-window)
+  (parameterize ([plot-x-ticks (date-ticks)])
+    (plot plottables)))
+
+(define (peak-stream window #:peak? (peak? peak?))
+  (~> window
+      slice-rows
+      (append-slices #:yield-when peak?)
+      sequence->stream))
+;; ** Test
+;; 2019 01 01 0 0 0 in seconds 1546297200
+(module+ serialize
+  (require racket/serialize)
+  (provide write-to-file
+           read-from-file)
+  (define (write-to-file data (file-name "serialized.data"))
+    (with-output-to-file file-name
+      (λ () (write (serialize data)))))
+  (define  (read-from-file (file-name "serialized.data"))
+    (deserialize (with-input-from-file file-name read)))
+  (define (dump-data)
+    (write-to-file (query-rows kraken-db select-window 1546297200 (max-x)))))
+
+
+
+;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
+;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
+;;                             read))))
+(module+ test
+  (require rackunit)
+  (let ([slices (peak-stream 1546297200)])
+    (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
+                                                         (last-x p)))))
+(module+ reverse
+  (for/list ([p (in-stream (peak-stream (get-window #:start 1551049200
+                                                    #:end 1554064200)))])
+    (last-x p)))
+
+(define number-of-coins (make-parameter 1))
 
 (module+ trading-strategies
   (define (trade xmr eur peaks amount-fn)
@@ -215,3 +234,5 @@
         (if (not (eq? trade-type (first t)))
             (find-trade-amount )
             #t))))) ;nonsense
+(module+ db
+  (get-window #:start 1546297200 #:end (+ 1546297200 3600)))
