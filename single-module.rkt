@@ -130,9 +130,8 @@
       slice-rows
       (append-slices #:yield-when peak?)
       sequence->stream))
-;; ** Test
-;; 2019 01 01 0 0 0 in seconds 1546297200
-(module+ serialize
+;; ** Experiment
+(module+ experiment
   (require racket/serialize)
   (provide write-to-file
            read-from-file)
@@ -143,9 +142,8 @@
     (deserialize (with-input-from-file file-name read)))
   (define (dump-data)
     (write-to-file (query-rows kraken-db select-window 1546297200 (max-x)))))
-
-
-
+;; ** Test
+;; 2019 01 01 0 0 0 in seconds 1546297200
 ;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
 ;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
 ;;                             read))))
