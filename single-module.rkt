@@ -154,11 +154,6 @@
   (let ([slices (peak-stream 1546297200)])
     (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
                                                          (last-x p)))))
-(module+ reverse
-  (for/list ([p (in-stream (peak-stream (get-window #:start 1551049200
-                                                    #:end 1554064200)))])
-    (last-x p)))
-
 (define number-of-coins (make-parameter 1))
 
 (module+ trading-strategies
