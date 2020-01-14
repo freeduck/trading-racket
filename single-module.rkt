@@ -14,6 +14,12 @@
   (apply fit
          (append (transpose data) (list n))))
 
+(define (peak-stream window #:peak? (peak? peak?))
+  (~> window
+      slice-rows
+      (append-slices #:yield-when peak?)
+      sequence->stream))
+
 ;; ** Analysis
 (define (focus-x data-set)
   (define-values (c b a) (vector->values (fit-data data-set)))
@@ -54,6 +60,7 @@
         (forward-peak? window)
         (reverse-peak? window))))
 ;; ** Trading
+(define number-of-coins (make-parameter 1))
 ;; Find previous trade where historic price is the same or lower for buy and same or higher for sell
 (define (find-trade-amount trade-history trade-type current-price)
   (if (empty? trade-history)
@@ -124,12 +131,6 @@
   (plot-new-window? new-window)
   (parameterize ([plot-x-ticks (date-ticks)])
     (plot plottables)))
-
-(define (peak-stream window #:peak? (peak? peak?))
-  (~> window
-      slice-rows
-      (append-slices #:yield-when peak?)
-      sequence->stream))
 ;; ** Experiment
 (module+ experiment
   (require racket/serialize)
@@ -141,21 +142,10 @@
   (define  (read-from-file (file-name "serialized.data"))
     (deserialize (with-input-from-file file-name read)))
   (define (dump-data)
-    (write-to-file (query-rows kraken-db select-window 1546297200 (max-x)))))
-;; ** Test
-;; 2019 01 01 0 0 0 in seconds 1546297200
-;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
-;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
-;;                             read))))
-(module+ test
-  (require rackunit)
-  (let ([slices (peak-stream 1546297200)])
-    (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
-                                                         (last-x p)))))
-(define number-of-coins (make-parameter 1))
+    (write-to-file (query-rows kraken-db select-window 1546297200 (max-x))))
 
-(module+ trading-strategies
-  (define (trade xmr eur peaks amount-fn)
+  (module+ trading-strategies
+    (define (trade xmr eur peaks amount-fn)
       (for/fold ([xmr xmr]
                  [eur eur]
                  [initial-price #f]
@@ -178,54 +168,67 @@
           (if (eq? 'sell trade-type)
               (values (- xmr amount) (+ eur (* yn amount)) initial-price yn (cons (list 'sell amount yn) historic-trades))
               (values (+ xmr amount) (- eur (* yn amount)) initial-price yn (cons (list 'buy amount yn) historic-trades))))))
-  
-  (module+ same-amount
-    (for/fold ([xmr 30]
-               [eur 2000]
-               [initial-price #f]
-               [final-price 0])
-              ([p (in-stream (peak-stream (get-window #:start 1546297200)))])
-      (let*-values ([(x0 y0 xn yn) (dimensions p)]
-                    [(price-diff) (- yn y0)]
-                    [(initial-price) (if (eq? #f initial-price)
-                                         y0
-                                         initial-price)])
-        (when (< eur 0)
-          (error "No more funding"))
-        (when (< xmr 0)
-          (error "No more coins"))
-        (if (> price-diff 0)
-            (begin
-              (displayln "Sell")
-              (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
-            (begin
-              (displayln "Buy")
-              (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
-  (module+ level
-    (trade 20 2000 (in-stream (peak-stream (get-window #:end 1547695800))))
-    ;; we are buying
-    ;; (define trade-type 'buy)
-    ;; (define current-price 37.63)
-    ;; thesis one:
-    ;; if we meet a trade of the same type we recurs
-    ;; and let it eat what it can.
-    ;; the list must be a iterator which can be passed.
-    ;; '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1))
-    ;; (define trade-history '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1)))
-    (module+ test-data
-      (define trade-type 'buy)
-      (define current-price 37.63)
-      (define trade-history '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1))))
     
-    
+    (module+ same-amount
+      (for/fold ([xmr 30]
+                 [eur 2000]
+                 [initial-price #f]
+                 [final-price 0])
+                ([p (in-stream (peak-stream (get-window #:start 1546297200)))])
+        (let*-values ([(x0 y0 xn yn) (dimensions p)]
+                      [(price-diff) (- yn y0)]
+                      [(initial-price) (if (eq? #f initial-price)
+                                           y0
+                                           initial-price)])
+          (when (< eur 0)
+            (error "No more funding"))
+          (when (< xmr 0)
+            (error "No more coins"))
+          (if (> price-diff 0)
+              (begin
+                (displayln "Sell")
+                (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
+              (begin
+                (displayln "Buy")
+                (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
+    (module+ level
+      (trade 20 2000 (in-stream (peak-stream (read-from-file))))
+      ;; we are buying
+      ;; (define trade-type 'buy)
+      ;; (define current-price 37.63)
+      ;; thesis one:
+      ;; if we meet a trade of the same type we recurs
+      ;; and let it eat what it can.
+      ;; the list must be a iterator which can be passed.
+      ;; '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1))
+      ;; (define trade-history '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1)))
+      (module+ test-data
+        (define trade-type 'buy)
+        (define current-price 37.63)
+        (define trade-history '((buy 45.95) (sell 48.0) (sell 45.84) (sell 43.1)))))))
 
 
-    #;(define (find-trade-amount trade-type trades)
-      (for/fold ([amount 0]
-                 [processed-trades '()])
-                ([t trades])
-        (if (not (eq? trade-type (first t)))
-            (find-trade-amount )
-            #t))))) ;nonsense
+;; ** Test
+;; 2019 01 01 0 0 0 in seconds 1546297200
+;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
+;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
+;;                             read))))
+(module+ test
+  (require rackunit)
+  (let ([slices (peak-stream 1546297200)])
+    (check-equal? '#[1546539900 1546795500 1546813500] (for/vector ([p (stream-take slices 3)])
+                                                         (last-x p)))))
+
 (module+ db
   (get-window #:start 1546297200 #:end (+ 1546297200 3600)))
+
+
+
+
+#;(define (find-trade-amount trade-type trades)
+    (for/fold ([amount 0]
+               [processed-trades '()])
+              ([t trades])
+      (if (not (eq? trade-type (first t)))
+          (find-trade-amount )
+          #t))) ;nonsense
