@@ -31,7 +31,7 @@
         [last-coord (sequence-ref window (- (sequence-length window) 1))])
     (values (vector-ref first-coord 0) (vector*-ref first-coord 1)
             (vector-ref last-coord 0) (vector*-ref last-coord 1))))
-
+;; *** Peak
 (define (reverse-peak? window)
   (not (~> window
            ((λ (w) (let* ([t (transpose w)]
@@ -192,7 +192,9 @@
                 (displayln "Buy")
                 (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
     (module+ level
-      (trade 20 2000 (in-stream (peak-stream (read-from-file))))
+      (require profile)
+      (define (profile)
+        (profile-thunk (λ () (trade 20 2000 (in-stream (peak-stream (read-from-file))) find-trade-amount))))
       ;; we are buying
       ;; (define trade-type 'buy)
       ;; (define current-price 37.63)
