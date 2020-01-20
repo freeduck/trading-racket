@@ -212,6 +212,7 @@
 
 ;; ** Test
 ;; 2019 01 01 0 0 0 in seconds 1546297200
+;; 2019 01 31 23 59 59 epoch 1548975599
 ;; (define rows (deserialize (with-input-from-file "first-part.data" read)))
 ;; (define rows (deserialize (with-input-from-file "2019-01-01-00-06_2019-12-16-14-02.data"
 ;;                             read))))
