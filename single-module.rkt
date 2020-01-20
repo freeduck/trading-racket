@@ -5,7 +5,8 @@
          plot
          threading
          racket/generator
-         racket/date)
+         racket/date
+         profile)
 ;; ** Data mangling
 (define (transpose data)
   (vector->list (apply vector-map list data)))
@@ -192,7 +193,6 @@
                 (displayln "Buy")
                 (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
     (module+ level
-      (require profile)
       (define (profile)
         (profile-thunk (λ () (trade 20 2000 (in-stream (peak-stream (read-from-file))) find-trade-amount))))
       ;; we are buying
