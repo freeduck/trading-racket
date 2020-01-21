@@ -133,6 +133,29 @@
   (parameterize ([plot-x-ticks (date-ticks)])
     (plot plottables)))
 ;; ** Experiment
+(define (trade xmr eur peaks amount-fn)
+  (for/fold ([xmr xmr]
+             [eur eur]
+             [initial-price #f]
+             [final-price 0]
+             [historic-trades '()])
+            ([p peaks])
+    (let*-values ([(x0 y0 xn yn) (dimensions p)]
+                  [(price-diff) (- yn y0)]
+                  [(initial-price) (if (eq? #f initial-price)
+                                       y0
+                                       initial-price)]
+                  [(trade-type) (if (> price-diff 0)
+                                    'sell
+                                    'buy)]
+                  [(amount) (amount-fn historic-trades trade-type yn)])
+      (when (< eur 0)
+        (displayln (string-append "No more funding" (number->string xn) (number->string xmr))))
+      (when (< xmr 0)
+        (displayln (string-append "No more coins" (number->string xn) (number->string  xmr))))
+      (if (eq? 'sell trade-type)
+          (values (- xmr amount) (+ eur (* yn amount)) initial-price yn (cons (list 'sell amount yn) historic-trades))
+          (values (+ xmr amount) (- eur (* yn amount)) initial-price yn (cons (list 'buy amount yn) historic-trades))))))
 (module+ experiment
   (require racket/serialize)
   (provide write-to-file
@@ -146,29 +169,6 @@
     (write-to-file (query-rows kraken-db select-window 1546297200 (max-x))))
 
   (module+ trading-strategies
-    (define (trade xmr eur peaks amount-fn)
-      (for/fold ([xmr xmr]
-                 [eur eur]
-                 [initial-price #f]
-                 [final-price 0]
-                 [historic-trades '()])
-                ([p peaks])
-        (let*-values ([(x0 y0 xn yn) (dimensions p)]
-                      [(price-diff) (- yn y0)]
-                      [(initial-price) (if (eq? #f initial-price)
-                                           y0
-                                           initial-price)]
-                      [(trade-type) (if (> price-diff 0)
-                                        'sell
-                                        'buy)]
-                      [(amount) (amount-fn historic-trades trade-type yn)])
-          (when (< eur 0)
-            (displayln (string-append "No more funding" (number->string xn) (number->string xmr))))
-          (when (< xmr 0)
-            (displayln (string-append "No more coins" (number->string xn) (number->string  xmr))))
-          (if (eq? 'sell trade-type)
-              (values (- xmr amount) (+ eur (* yn amount)) initial-price yn (cons (list 'sell amount yn) historic-trades))
-              (values (+ xmr amount) (- eur (* yn amount)) initial-price yn (cons (list 'buy amount yn) historic-trades))))))
     
     (module+ same-amount
       (for/fold ([xmr 30]
