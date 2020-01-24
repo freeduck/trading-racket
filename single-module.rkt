@@ -171,27 +171,31 @@
   (module+ trading-strategies
     
     (module+ same-amount
-      (for/fold ([xmr 30]
-                 [eur 2000]
-                 [initial-price #f]
-                 [final-price 0])
-                ([p (in-stream (peak-stream (get-window #:start 1546297200)))])
-        (let*-values ([(x0 y0 xn yn) (dimensions p)]
-                      [(price-diff) (- yn y0)]
-                      [(initial-price) (if (eq? #f initial-price)
-                                           y0
-                                           initial-price)])
-          (when (< eur 0)
-            (error "No more funding"))
-          (when (< xmr 0)
-            (error "No more coins"))
-          (if (> price-diff 0)
-              (begin
-                (displayln "Sell")
-                (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
-              (begin
-                (displayln "Buy")
-                (values (+ xmr 5) (- eur (* yn 5)) initial-price yn))))))
+      (define (trade-jan)
+        (define data (get-window #:start 1546297260 #:end 1548975599))
+        (trade 20 2000 (in-stream (peak-stream data)) (λ (historic-trades trade-type price)5)))
+      (define (trade-2019)
+        (for/fold ([xmr 30]
+                   [eur 2000]
+                   [initial-price #f]
+                   [final-price 0])
+                  ([p (in-stream (peak-stream (get-window #:start 1546297200)))])
+          (let*-values ([(x0 y0 xn yn) (dimensions p)]
+                        [(price-diff) (- yn y0)]
+                        [(initial-price) (if (eq? #f initial-price)
+                                             y0
+                                             initial-price)])
+            (when (< eur 0)
+              (error "No more funding"))
+            (when (< xmr 0)
+              (error "No more coins"))
+            (if (> price-diff 0)
+                (begin
+                  (displayln "Sell")
+                  (values (- xmr 5) (+ eur (* yn 5)) initial-price yn))
+                (begin
+                  (displayln "Buy")
+                  (values (+ xmr 5) (- eur (* yn 5)) initial-price yn)))))))
     (module+ level
       (define (profile)
         (profile-thunk (λ () (trade 20 2000 (in-stream (peak-stream (read-from-file))) find-trade-amount))))
