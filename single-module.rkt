@@ -28,8 +28,8 @@
      (* 2 a)))
 
 (define (dimensions window)
-  (let ([first-coord (sequence-ref window 0)]
-        [last-coord (sequence-ref window (- (sequence-length window) 1))])
+  (let ([first-coord (first window)]
+        [last-coord (last window)])
     (values (vector-ref first-coord 0) (vector*-ref first-coord 1)
             (vector-ref last-coord 0) (vector*-ref last-coord 1))))
 ;; *** Peak
